@@ -5,6 +5,7 @@ const { width, height } = Dimensions.get('window');
 const loginStyles = StyleSheet.create({
   all:{
     backgroundColor: 'white',
+    height: height,
   },
   image:{
     width: width,
@@ -22,14 +23,28 @@ const loginStyles = StyleSheet.create({
     marginTop:5
   },
   login_box: {
-    alignItems: 'center'
+    alignItems: 'center',
   },
-  button:{
+  button_field:{
     marginTop: 5,
   },
-    sign_in_button: {
+  sign_in_button: {
     marginTop:5,
-    borderRadius: 10,
+  },
+  separate_field: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+
+  },
+  separate_line: {
+    width: 100,
+    backgroundColor: 'black',
+    opacity: 0.2,
+    height: 1,
+  },
+  third_party_login_button: {
+    marginTop: 20,
   }
 });
 
