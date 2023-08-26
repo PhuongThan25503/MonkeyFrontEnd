@@ -1,6 +1,7 @@
 import * as KeyChain from 'react-native-keychain';
 import { SECURE_KEY } from '../config';
 
+//get the api
 export const GetAPIToken = async () => {
     let apitoken = '';
     //get token
@@ -14,3 +15,4 @@ export const GetAPIToken = async () => {
     //return the token
     return apitoken;
 }
+

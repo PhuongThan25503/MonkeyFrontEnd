@@ -6,10 +6,11 @@ const loginStyles = StyleSheet.create({
   all:{
     backgroundColor: 'white',
     height: height,
+    flex:1,
   },
   image:{
     width: width,
-    height:250,
+    height:'30%',
   },
   text: {
     color: 'black',
@@ -17,10 +18,13 @@ const loginStyles = StyleSheet.create({
   },
   input: {
     borderRadius: 10,
-    width: 350,
+    width: '100%',
     color: 'black',
     borderWidth: 1,
     marginTop:5
+  },
+  input_box:{
+    width: '80%',
   },
   login_box: {
     alignItems: 'center',
@@ -38,7 +42,7 @@ const loginStyles = StyleSheet.create({
 
   },
   separate_line: {
-    width: 100,
+    width: '20%',
     backgroundColor: 'black',
     opacity: 0.2,
     height: 1,

@@ -17,8 +17,21 @@ npm start
 # OR using Yarn
 yarn start
 ```
+## Step 2: Start backend server : 
 
-## Step 2: Start your Application
+Open php laravel backend project , run command "php artisan serve" to run backend server at localhost:8000
+
+## Step 3: Start Ngrok : 
+
+Go to C:\FPT Documents\semester 6\ngrok (orwhere you save the ngrok) and start it 
+
+Run command "ngrok.exe http 8000" to redirect ngrok path to your local host 8000
+
+## Step 4: Check your debug device :
+
+Make sure you setting the correct IP port for debugging via wifi network
+
+## Step 5: Start your Application
 
 Let Metro Bundler run in its _own_ terminal. Open a _new_ terminal from the _root_ of your React Native project. Run the following command to start your _Android_ or _iOS_ app:
 
@@ -46,7 +59,7 @@ If everything is set up _correctly_, you should see your new app running in your
 
 This is one way to run your app — you can also run it directly from within Android Studio and Xcode respectively.
 
-## Step 3: Modifying your App
+## Step 6: Modifying your App
 
 Now that you have successfully run the app, let's modify it.
 

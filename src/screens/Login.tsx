@@ -9,7 +9,7 @@ import FacebookSignInButton from "../components/FacebookSignInButton"
 import GoogleSignInButton from "../components/GoogleSignInButton";
 import { IP } from "../config"; //IP of free ngrok version
 import { SECURE_KEY } from "../config"; //Secure key of react-native-keychain
-import { RootStackParamList } from "../navigator/RootStackParamList";
+import { RootStackParamList } from "../types";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
 type LoginScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Login'>;
@@ -18,64 +18,46 @@ type Props = {
   navigation: LoginScreenNavigationProp;
 };
 
+const handleLogin = async (username : String, password :String) => {
+  const API_URL = IP + '/api/authenticate';
+  try {
+    let response = await axios.post(API_URL, {
+      username,
+      password
+    });
+    //handle the response from API
+    let apiToken = await response.data;
+    let { token } = await apiToken;
+
+    //for debugging
+    console.log(apiToken);
+
+    //save the api token 
+    await Keychain.setGenericPassword('apiToken', token, {
+      service: SECURE_KEY,
+    });
+  } catch (error) {
+    console.error(error);
+  }
+};
+
 function Login({ navigation }: Props) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [apiToken, setApiToken] = useState('Okeee');
 
-  const handleLogin = async () => {
-    const apiUrl = IP + '/api/authenticate';
-    try {
-      // const response = await fetch(apiUrl, {
-      //   method: 'POST',
-      //   headers: {
-      //     'Content-type': 'application/json'
-      //   },
-      //   body: JSON.stringify({
-      //     username,
-      //     password
-      //   }),
-      // });
-      //   const apiToken = await response.json();
-      //   const { token } = apiToken;
-      //   console.log(apiToken);
-      //   setApiToken(token);
-      // } catch (error) {
-      //   console.error(error);
-      // }
-      let response = await axios.post(apiUrl, {
-        username,
-        password
-      });
-      //handle the response from API
-      let apiToken = await response.data;
-      let { token } = await apiToken;
-
-      //for debugging
-      console.log(apiToken);
-      setApiToken(token);
-
-      //save the api token 
-      await Keychain.setGenericPassword('apiToken', token, {
-        service: SECURE_KEY,
-      });
-
-      //redirect to home 
-      await navigation.navigate('Home');
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  const handleSubmit = async () => {
+        //authenticate and save the token
+        handleLogin(username, password);
+        //redirect to home 
+        await navigation.navigate('Home');
+  }
 
   return (
     <SafeAreaView style={loginStyles.all}>
-      <Text style={loginStyles.text}>
-        Token: {apiToken}
-      </Text>
       <View>
         <Image resizeMode="contain" style={loginStyles.image} source={require('../assets/monkey-junior.png')} />
         <View style={loginStyles.login_box}>
-          <View>
+          <View style={loginStyles.input_box}>
             <Text style={loginStyles.text}>
               Username
             </Text>
@@ -84,7 +66,7 @@ function Login({ navigation }: Props) {
             </TextInput>
           </View>
 
-          <View>
+          <View style={loginStyles.input_box}>
             <Text style={loginStyles.text}>
               Password
             </Text>
@@ -95,7 +77,7 @@ function Login({ navigation }: Props) {
 
           <View style={loginStyles.button_field}>
             <View style={loginStyles.button_field}>
-              <Button title="Sign in" onPress={() => handleLogin()}></Button>
+              <Button title="Sign in" onPress={() => handleSubmit()}></Button>
             </View>
             <View style={loginStyles.separate_field}>
               <View style={loginStyles.separate_line}></View>
