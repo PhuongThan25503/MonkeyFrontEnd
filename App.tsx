@@ -11,11 +11,7 @@ import Home from './src/screens/Home';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Login from './src/screens/Login';
-
-type RootStackParamList = {
-  Home: undefined;
-  Login: undefined;
-};
+import { RootStackParamList } from './src/navigator/RootStackParamList';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
