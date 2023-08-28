@@ -53,7 +53,7 @@ function Login({ navigation }: Props) {
   }
 
   return (
-    <SafeAreaView style={loginStyles.all}>
+    <SafeAreaView style={loginStyles.screen}>
       <View>
         <Image resizeMode="contain" style={loginStyles.image} source={require('../assets/monkey-junior.png')} />
         <View style={loginStyles.login_box}>

@@ -21,11 +21,21 @@ yarn start
 
 Open php laravel backend project , run command "php artisan serve" to run backend server at localhost:8000
 
-## Step 3: Start Ngrok : 
+## Step 3: Start Ngrok or change your IP in config file: 
+
+1. If using ngrok
 
 Go to C:\FPT Documents\semester 6\ngrok (orwhere you save the ngrok) and start it 
 
 Run command "ngrok.exe http 8000" to redirect ngrok path to your local host 8000
+
+Config IP provided by ngrok at ../config.tsx
+
+2. If not 
+
+Run "php artisan serve --host=0.0.0.0" in terminal of backend php server
+
+Config IP of local computer at ../config.tsx
 
 ## Step 4: Check your debug device :
 

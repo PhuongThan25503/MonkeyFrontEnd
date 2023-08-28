@@ -14,16 +14,9 @@ type Props = {
 }
 
 function Home({ navigation }: Props) {
-  const[api_token, setApi_token] = useState('');
-  useEffect(() =>{
-    GetAPIToken().then(token => setApi_token(token));
-  })
   return (
     <SafeAreaView>
       <View>
-        <Text style={{color:'black'}}>
-          API token : {api_token}
-        </Text>
         <Button title="Login" onPress={() => navigation.navigate('Login')}></Button>
         <Button title="User" onPress={() => navigation.navigate('UserPersonalInfo')}></Button>
       </View>
