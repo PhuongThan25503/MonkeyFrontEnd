@@ -10,13 +10,7 @@ import { View , Text, StyleSheet} from 'react-native';
 import { UserStyle } from './styles/UserPersonalInfoStyle';
 import { User } from '../types';
 
-type UserScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'UserPersonalInfo'>
-
-type Props = {
-  navigation: UserScreenNavigationProp;
-}
-
-function UserPersonalInfo({ navigation }: Props) {
+function UserPersonalInfo() {
   //define and initialize user
   const [user, setUser] = useState<User>({
     id: 0,

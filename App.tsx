@@ -20,9 +20,20 @@ function App(){
   return(
     <NavigationContainer>
       <Stack.Navigator initialRouteName='Home'>
-        <Stack.Screen name='Home' component={Home}></Stack.Screen>
-        <Stack.Screen name='Login' component={Login}></Stack.Screen>
-        <Stack.Screen name='UserPersonalInfo' component={UserPersonalInfo}></Stack.Screen>
+        <Stack.Screen 
+          name='Home' 
+          component={Home}
+          options={{ headerShown: false}}
+        />
+        <Stack.Screen 
+          name='Login' 
+          component={Login}
+        />
+        <Stack.Screen 
+          name='UserPersonalInfo' 
+          component={UserPersonalInfo}
+          options={{title:'Personal info'}}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );
