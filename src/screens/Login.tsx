@@ -9,16 +9,14 @@ import FacebookSignInButton from "../components/FacebookSignInButton"
 import GoogleSignInButton from "../components/GoogleSignInButton";
 import { IP } from "../config"; //IP of free ngrok version
 import { SECURE_KEY } from "../config"; //Secure key of react-native-keychain
-import { RootStackParamList } from "../types";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-
-type LoginScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Login'>;
+import { RootStackParamList } from "../types";
 
 type Props = {
-  navigation: LoginScreenNavigationProp;
+  navigation:NativeStackNavigationProp<RootStackParamList>;
 };
 
-const handleLogin = async (username : String, password :String) => {
+const handleLogin = async (username: String, password: String) => {
   const API_URL = IP + '/api/authenticate';
   try {
     let response = await axios.post(API_URL, {
@@ -41,15 +39,15 @@ const handleLogin = async (username : String, password :String) => {
   }
 };
 
-function Login({ navigation }: Props) {
+function Login( {navigation} : Props) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
   const handleSubmit = async () => {
-        //authenticate and save the token
-        handleLogin(username, password);
-        //redirect to home 
-        await navigation.navigate('Home');
+    //authenticate and save the token
+    await handleLogin(username, password);
+    //redirect to home 
+    navigation.navigate('Home');
   }
 
   return (
