@@ -5,8 +5,8 @@ import axios from 'axios';
 import * as Keychain from 'react-native-keychain';
 
 import loginStyles from "./styles/LoginStyle";
-import FacebookSignInButton from "../components/FacebookSignInButton"
-import GoogleSignInButton from "../components/GoogleSignInButton";
+import FacebookSignInButton from "../components/buttons/FacebookSignInButton"
+import GoogleSignInButton from "../components/buttons/GoogleSignInButton";
 import { IP } from "../config"; //IP of free ngrok version
 import { SECURE_KEY } from "../config"; //Secure key of react-native-keychain
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";

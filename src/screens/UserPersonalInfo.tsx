@@ -3,12 +3,11 @@ import React, { useEffect, useState } from 'react';
 import { RootStackParamList } from '../types';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { IP } from '../config';
-import axios from 'axios';
-import { GetAPIToken } from '../utils/api';
-import { View , Text, StyleSheet} from 'react-native';
+import { getAPIToken } from '../utils/api';
+import { View, Text, StyleSheet } from 'react-native';
 import { UserStyle } from './styles/UserPersonalInfoStyle';
 import { User } from '../types';
+import { getUserInfo } from '../utils/user';
 
 function UserPersonalInfo() {
   //define and initialize user
@@ -20,24 +19,9 @@ function UserPersonalInfo() {
     address: 'N/A',
   });
 
-  //get user info
-  async function setUserInfo() {
-    try {
-      let api_token = await GetAPIToken();
-      let apiUrl = IP + '/api/getPersonalInfo';
-      let config = {
-        headers: { Authorization: `Bearer ${api_token}` }
-      }
-      await axios.post(apiUrl, '', config)
-        .then(response => setUser(response.data))
-    } catch (error) {
-      console.error(error);
-    }
-  }
-
   //get the api token
   useEffect(() => {
-    setUserInfo();
+    getUserInfo().then(data => setUser(data));
   }, [])
 
   return (
