@@ -1,42 +1,16 @@
 import React, { useState } from "react";
 
 import { View, Text, SafeAreaView, TextInput, Button, Image, Dimensions } from "react-native";
-import axios from 'axios';
-import * as Keychain from 'react-native-keychain';
 
 import loginStyles from "./styles/LoginStyle";
 import FacebookSignInButton from "../components/buttons/FacebookSignInButton"
 import GoogleSignInButton from "../components/buttons/GoogleSignInButton";
-import { IP } from "../config"; //IP of free ngrok version
-import { SECURE_KEY } from "../config"; //Secure key of react-native-keychain
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../types";
+import { handleLogin } from "../utils/authenticate";
 
 type Props = {
   navigation:NativeStackNavigationProp<RootStackParamList>;
-};
-
-const handleLogin = async (username: String, password: String) => {
-  const API_URL = IP + '/api/authenticate';
-  try {
-    let response = await axios.post(API_URL, {
-      username,
-      password
-    });
-    //handle the response from API
-    let apiToken = await response.data;
-    let { token } = await apiToken;
-
-    //for debugging
-    console.log(apiToken);
-
-    //save the api token 
-    await Keychain.setGenericPassword('apiToken', token, {
-      service: SECURE_KEY,
-    });
-  } catch (error) {
-    console.error(error);
-  }
 };
 
 function Login( {navigation} : Props) {

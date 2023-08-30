@@ -1,9 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-import { RootStackParamList } from '../types';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { getAPIToken } from '../utils/api';
 import { View, Text, StyleSheet } from 'react-native';
 import { UserStyle } from './styles/UserPersonalInfoStyle';
 import { User } from '../types';

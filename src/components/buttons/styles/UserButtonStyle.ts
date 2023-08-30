@@ -26,8 +26,15 @@ export const UserButtonStyle = StyleSheet.create({
   },
   fieldName:{
     top: width * 0.14,
+    marginLeft: width * 0.015
   },
   textName:{
+    fontSize: width*0.009,
+    fontStyle: 'italic',
+    fontWeight: 'bold',
+    color: 'white',
+  },
+  versionInfo:{
     fontSize: width*0.008,
     fontStyle: 'italic',
   },
@@ -45,7 +52,17 @@ export const UserButtonStyle = StyleSheet.create({
   },
   expandButtonGroup:{
     flexDirection: 'column',
-    marginTop: width * 0.16,
-    marginLeft: width * 0.12,
+    marginTop: width * 0.18,
+    marginLeft: width * 0.05,
+    alignItems: 'flex-end',
+    width: width*0.1,
+  },
+  buttonField:{
+    flexDirection: 'row',
+    alignItems: 'center'
+  },
+  buttonTitle:{
+    color: 'white',
+    fontSize: width*0.01
   }
 });

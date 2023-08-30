@@ -58,7 +58,7 @@ export const handleLogout = async () => {
       headers: { Authorization: `Bearer ${apiToken}` }
     };
     let response = await axios.post(apiUrl,'',config);
-    console.log(response);
+    console.log(response.data);
 
     //clear api token from the keychain front end
     await Keychain.resetGenericPassword({
