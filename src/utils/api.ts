@@ -2,7 +2,7 @@ import * as KeyChain from 'react-native-keychain';
 import { SECURE_KEY } from '../config';
 
 //get the api
-export const GetAPIToken = async () => {
+export const getAPIToken = async () => {
     let apitoken = '';
     //get token
     await KeyChain.getGenericPassword({
