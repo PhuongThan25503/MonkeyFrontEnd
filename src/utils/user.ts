@@ -1,3 +1,5 @@
+import { useState, useEffect } from 'react';
+
 import { getAPIToken } from '../utils/api';
 import { IP } from '../config';
 import axios from 'axios';
@@ -19,6 +21,29 @@ export const getUserInfo = async (): Promise<User> => {
   }
   return defaultUser
 }
+
+export const useGetUserInfo = (): User => {
+  const [userInfo, setUserInfo] = useState(defaultUser);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        let api_token = await getAPIToken();
+        let apiUrl = IP + '/api/getPersonalInfo';
+        let config = {
+          headers: { Authorization: `Bearer ${api_token}` }
+        }
+        let response = await axios.post(apiUrl, '', config);
+        setUserInfo(response.data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchData();
+  }, []);
+  return userInfo;
+};
 
 export const defaultUser: User = {
   id: 0,
