@@ -1,6 +1,22 @@
-import { Dimensions, StyleSheet } from "react-native";
+import { Dimensions, StyleSheet, Animated } from "react-native";
 
 const {width, height} = Dimensions.get('window');
+
+const scaleUp = () => {
+  Animated.timing(scaleAnim, {
+    toValue:2,
+    duration: 500,
+    useNativeDriver: true,
+  }).start();
+};
+
+const scaleDown = () => {
+  Animated.timing(scaleAnim, {
+    toValue:1,
+    duration: 500,
+    useNativeDriver: true,
+  }).start();
+}
 
 export const HomeStyle = StyleSheet.create({
   screen:{
@@ -30,7 +46,7 @@ export const HomeStyle = StyleSheet.create({
     borderColor: 'white',
     margin: width * 0.015,
     position: 'absolute',
-    backgroundColor: 'brown'
+    backgroundColor: 'red'
   },
   headerLeft: {
     width: width *0.9,

@@ -8,7 +8,9 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 import { UserButtonStyle } from './styles/UserButtonStyle';
 import { anim } from '../../utils/animation';
-import { User } from '../../types';
+import { RootStackParamList, User } from '../../types';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useNavigation } from '@react-navigation/native';
 
 type Props = {
 	style: ViewStyle,
@@ -17,6 +19,7 @@ type Props = {
 }
 
 const UserButton = ({ style, userData, onPressProp }: Props): JSX.Element => {
+	const navigation = useNavigation();
 	const ICON_SIZE = 8;
 	const [buttonToggle, setButtonToggle] = useState(true);
 	const scaleAnim = useRef(new Animated.Value(1)).current;
@@ -53,7 +56,7 @@ const UserButton = ({ style, userData, onPressProp }: Props): JSX.Element => {
 					<Text style={UserButtonStyle.textName}>{userData.fullname}</Text>
 				</View>
 				<View style={UserButtonStyle.expandButtonGroup}>
-					<TouchableOpacity style={UserButtonStyle.expandButton}>
+					<TouchableOpacity onPress={() => navigation.navigate('UserPersonalInfo')} style={UserButtonStyle.expandButton}>
 						<View >
 							<AntDesign name='user' size={ICON_SIZE} style={UserButtonStyle.icon}></AntDesign>
 						</View>
