@@ -11,6 +11,6 @@ export const LoginButtonStyle = StyleSheet.create({
     color: 'black'
   },
   icon:{
-    color: '#3b5998',
+    color: 'white',
   }
 });

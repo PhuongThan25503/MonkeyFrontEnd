@@ -4,9 +4,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { View, Text, TouchableOpacity } from 'react-native';
 
 import { ViewStyle } from 'react-native';
-import { LoginButtonStyle } from './styles/LoginBUttonStyle';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../types';
+import { LoginButtonStyle } from './styles/LoginButtonStyle';
 
 type Props = {
 	style: ViewStyle,
@@ -22,7 +20,5 @@ const LoginButton = ({ style, onPress }: Props): JSX.Element => {
 		</TouchableOpacity>
 	)
 };
-
-
 
 export default LoginButton;
