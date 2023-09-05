@@ -4,17 +4,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { View, Text, StyleSheet } from 'react-native';
 import { UserStyle } from './styles/UserPersonalInfoStyle';
 import { User } from '../types';
-import { getUserInfo } from '../utils/user';
+import { defaultUser, getUserInfo } from '../utils/user';
 
 function UserPersonalInfo() {
   //define and initialize user
-  const [user, setUser] = useState<User>({
-    id: 0,
-    fullname: 'N/A',
-    phone: 'N/A',
-    email: 'N/A',
-    address: 'N/A',
-  });
+  const [user, setUser] = useState<User>(defaultUser);
 
   //get the api token
   useEffect(() => {

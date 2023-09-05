@@ -15,14 +15,14 @@ export const UserButtonStyle = StyleSheet.create({
     color: 'white',
   },
   button:{
-    zIndex:1,
+    zIndex:3,
   },
   expandField:{
     width: width * 0.35,
     height: width * 0.35,
     borderRadius: 100,
     backgroundColor:'firebrick',
-    zIndex: 0,
+    zIndex: 2,
   },
   fieldName:{
     top: width * 0.14,
