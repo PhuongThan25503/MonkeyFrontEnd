@@ -19,6 +19,7 @@ export const getAPIToken = async () => {
 
 //refresg token function
 export const refreshToken = async () => {
+  console.log('refresh');
   const API_URL = IP + '/api/refresh-token';
   try {
     let apiToken = await getAPIToken();

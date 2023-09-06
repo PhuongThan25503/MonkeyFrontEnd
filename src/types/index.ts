@@ -43,3 +43,11 @@ export type AudioInterface = {
   textId: number,
   text: string,
 }
+
+//page information
+export type PageInterface = {
+  page_id: number,
+  story_id: number,
+  background: string,
+  page_num: number,
+}

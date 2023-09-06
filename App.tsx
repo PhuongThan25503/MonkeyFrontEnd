@@ -17,7 +17,7 @@ import Story from './src/screens/Story';
 import StoryDetail from './src/screens/StoryDetail';
 import Audio from './src/screens/Audio';
 import { REFRESH_INTERVAL } from './src/config';
-import { refreshToken } from './src/utils/authenticate';
+import { getAPIToken, refreshToken } from './src/utils/authenticate';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -30,8 +30,8 @@ function App(){
     // Set up the interval to call the token refresh function
     const interValid = setInterval(refreshToken, REFRESH_INTERVAL); 
 
-    
-  });
+    return () => clearInterval(interValid);
+  }, []);
 
   return(
     <NavigationContainer>
@@ -52,6 +52,7 @@ function App(){
         <Stack.Screen 
           name='StoryDetail' 
           component={StoryDetail}
+          options={{ headerShown: false}}
         />
         <Stack.Screen 
           name='Login' 

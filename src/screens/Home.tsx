@@ -12,11 +12,12 @@ import FontAwesome from "react-native-vector-icons/FontAwesome";
 import FunctionalButton from "../components/buttons/FunctionalButton";
 import { FunctionalButtonStyle } from "../components/buttons/styles/FunctionalButtonStyle";
 import { RootStackParamList, User } from "../types";
-import { isLoggedIn } from "../utils/authenticate";
+import { getAPIToken, isLoggedIn } from "../utils/authenticate";
 import { HomeStyle } from "./styles/HomeStyle";
 import LoginButton from "../components/buttons/LoginButton";
 import UserButton from "../components/buttons/UserButton";
 import { defaultUser, getUserInfo } from "../utils/user";
+import { Text } from "react-native";
 type Props = {
   navigation: NativeStackNavigationProp<RootStackParamList>;
 }
@@ -24,6 +25,10 @@ type Props = {
 function Home({ navigation }: Props) {
   const [user, setUser] = useState<User>(defaultUser);
   const [checkLoggedIn, setCheckLoggedIn] = useState(false);
+
+  const [apikey, setApiKey] = useState('');
+
+  getAPIToken().then(data => setApiKey(data));
 
   //use the useFocusEffect hook to call the refresh function on focus
   useFocusEffect(
@@ -39,8 +44,8 @@ function Home({ navigation }: Props) {
 
   return (
     <SafeAreaView style={HomeStyle.screen}>
-      <View style={{position:'absolute'}}>
-        <Image style={{position:'absolute'}} resizeMode="contain" source={require('../assets/story-background.jpg')}></Image>
+      <View style={{ position: 'absolute' }}>
+        <Image style={{ position: 'absolute' }} resizeMode="contain" source={require('../assets/story-background.jpg')}></Image>
       </View>
       <View style={HomeStyle.header}>
         <View style={HomeStyle.headerLeft}>
