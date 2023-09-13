@@ -5,7 +5,8 @@ export type RootStackParamList= {
   Login: undefined;
   Audio: undefined;
   UserPersonalInfo: undefined;
-  StoryDetail: undefined;
+  StoryDetail: {id:number};
+  Test: undefined;
 }
 
 //user credentials 

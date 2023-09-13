@@ -14,14 +14,13 @@ function Audio() {
     getAllAudio().then(data => setAudio(data));
   }, [])
 
-
   return (
     <SafeAreaView style={HomeStyle.screen}>
       <ScrollView>
         {
           Audio.map((a, value) =>
             value % 2 ==0 ?
-            <AudioItem style={{}} key={a.audio_id} audio={a.audio} audio={a}></AudioItem>
+            <AudioItem style={{}} key={a.audio_id} audio={a}></AudioItem>
             :
             <AudioItem style={AudioItemStyle.oddItemStyle} key={a.audio_id} audio={a}></AudioItem>
           )

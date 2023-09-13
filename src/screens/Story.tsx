@@ -29,7 +29,7 @@ function Story({ navigation }: Props) {
         <View>
           <ScrollView>
             {
-              story.map(s =>
+              story?.map(s =>
                 <StoryItem onPressProp={() => navigation.navigate('StoryDetail', { id: s.story_id })}
                 key={s.story_id}
                 name={s.name}

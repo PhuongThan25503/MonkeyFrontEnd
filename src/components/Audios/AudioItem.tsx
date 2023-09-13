@@ -4,7 +4,6 @@ import { Text } from "react-native";
 import { AudioItemStyle } from "./style/AudioItemStyle";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import SoundPlayer from 'react-native-sound-player'
-import TrackPlayer from "react-native-track-player";
 import { AudioInterface } from "../../types";
 
 type Props = {

@@ -64,8 +64,8 @@ function Home({ navigation }: Props) {
       <View style={HomeStyle.functionButtonField}>
         <FunctionalButton styleProp={HomeStyle.functionalButton} title={"Story"} Icon={<Entypo name='open-book' style={FunctionalButtonStyle.icon}></Entypo>} onPressProp={() => navigation.navigate('Story')}></FunctionalButton>
         <FunctionalButton styleProp={HomeStyle.functionalButton} title={"Audio"} Icon={<MaterialIcons name='audiotrack' style={FunctionalButtonStyle.icon}></MaterialIcons>} onPressProp={() => navigation.navigate('Audio')}></FunctionalButton>
-        <FunctionalButton styleProp={HomeStyle.functionalButton} title={"History"} Icon={<FontAwesome name='history' style={FunctionalButtonStyle.icon}></FontAwesome>} onPressProp={() => navigation.navigate('UserPersonalInfo')}></FunctionalButton>
-        <FunctionalButton styleProp={HomeStyle.functionalButton} title={"Setting"} Icon={<AntDesign name='setting' style={FunctionalButtonStyle.icon}></AntDesign>} onPressProp={() => navigation.navigate('UserPersonalInfo')}></FunctionalButton>
+        <FunctionalButton styleProp={HomeStyle.functionalButton} title={"History"} Icon={<FontAwesome name='history' style={FunctionalButtonStyle.icon}></FontAwesome>} onPressProp={() => navigation.navigate('Test')}></FunctionalButton>
+        <FunctionalButton styleProp={HomeStyle.functionalButton} title={"Setting"} Icon={<AntDesign name='setting' style={FunctionalButtonStyle.icon}></AntDesign>} onPressProp={() => navigation.navigate('Test')}></FunctionalButton>
       </View>
     </SafeAreaView>
   );
