@@ -13,5 +13,8 @@ export const StoryDetailStyle = StyleSheet.create({
     borderWidth: 2,
     borderColor: 'red',
     backgroundColor: 'red'
+  },
+  onHightLight: {
+    color: 'red',
   }
 });

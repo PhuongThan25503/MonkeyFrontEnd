@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { Alert, Dimensions, Platform, StatusBar, Text, View } from "react-native";
+import { Alert, Button, Dimensions, Platform, StatusBar, Text, View } from "react-native";
 
 import { Canvas, Fill, Image, Path, useFont, useImage } from '@shopify/react-native-skia';
 import { getPagesByStoryId } from '../utils/story';
@@ -7,6 +7,7 @@ import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-g
 import Orientation from 'react-native-orientation-locker';
 import SoundPlayer from 'react-native-sound-player';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { StyleSheet } from 'react-native';
 // interface RouteParams {
 //   id: number;
 // }
@@ -23,9 +24,12 @@ type touchableMediaData = {
   text: string,
   audio: string
 }
+
 type mainText = {
   text: string[],
   audio: string,
+  syncData: object[],
+  duration: number,
 }
 /**
  * Config for canvas path
@@ -33,7 +37,7 @@ type mainText = {
 const COLOR = "red";
 const OPACITY = 0.5;
 const SCALE = 0.55;
-const xFix = 15;
+const xFix = 14;
 /**
  * 
  */
@@ -52,7 +56,7 @@ function StoryDetail({ route }: any) {
   }
 
   //main text for a page
-  const [mainText, setMainText] = useState<mainText>({ audio: '', text: [''] });
+  const [mainText, setMainText] = useState<mainText>({ audio: '', text: [''], syncData: [{}], duration: 0 });
 
   //initialize basic info of the page
   const initializePage = async () => {
@@ -61,7 +65,12 @@ function StoryDetail({ route }: any) {
         setPages(data);
         let currentPage = data?.page[currentPageNum];
         setCurrentPage(currentPage);
-        setMainText({ text: currentPage.text?.text.split(' '), audio: currentPage.text?.audio?.audio });
+        setMainText({
+          text: currentPage.text?.text.split(' '),
+          audio: currentPage.text?.audio?.audio,
+          syncData: currentPage.text?.audio?.sync_data,
+          duration: currentPage.text?.audio?.duration,
+        });
       })
   };
 
@@ -86,17 +95,76 @@ function StoryDetail({ route }: any) {
     setTouchableData(tempTouchData); //save state
   }
 
-  //when page change
-  useEffect(() => {
-    stringArrayToPolygonArray();
+
+  //play the main audio of the page
+  const playMainAudio = () => {
     if (mainText?.audio && mainText.audio.length > 0) {
       try {
         SoundPlayer.playUrl(mainText?.audio);
-      }catch(error){
+        let _onLoadingSubscription = SoundPlayer.addEventListener('FinishedLoadingURL', (data) => {
+          console.log("start");
+          playEffectText();
+        });
+        let _onFinishSubscription = SoundPlayer.addEventListener('FinishedPlaying', (data) => {
+          console.log("finished");
+          _onLoadingSubscription.remove(); //remove event listener 
+          _onFinishSubscription.remove(); //remove event listener 
+        });
+      } catch (error) {
         console.log(error);
       }
     }
+  }
+  //when page change
+  useEffect(() => {
+    setWordEffect(mainText.syncData.map(s => false));
+    stringArrayToPolygonArray();
+    playMainAudio();
   }, [currentPage])
+
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = () => {
+    setRefreshing(!refreshing);
+  };
+
+
+  const [wordEffect, setWordEffect] = useState<boolean[]>([]);
+  //sync_text right here
+  const DELAY_FIX = 0;
+
+  //play effect text when sound start :
+  const playEffectText = () => {
+    let startTime = performance.now() + DELAY_FIX;
+    let timer = setInterval(updateTimer.bind(null, startTime), 10);
+    let wordIndex = 0;
+    let syncData = mainText.syncData;
+    function updateTimer(startTime: number) {
+
+      // Get the current time
+      let currentTime = performance.now();
+      // Calculate the elapsed time
+      let elapsedTime = Math.floor(currentTime - startTime);
+
+      if (syncData[wordIndex].s <= elapsedTime) {
+        // console.log(syncData[wordIndex].w);
+        // console.log(wordEffect);
+        setWordEffect(wordEffect.map((w, index) => (index == wordIndex) ? true : false))
+        if (wordIndex >= syncData.length - 1) { //when reach another word, switch
+          if (elapsedTime >= mainText.duration) {
+            // Stop the timer
+            setWordEffect(mainText.syncData.map(s => false));
+            clearInterval(timer);
+          }
+          return;
+        }
+        wordIndex++;
+      }
+    }
+  }
+  useEffect(() => {
+    playMainAudio();
+  }, [refreshing])
 
   //initialize story setting
   useEffect(() => {
@@ -122,19 +190,28 @@ function StoryDetail({ route }: any) {
       if (pointInPolygon([e.absoluteX / SCALE, e.absoluteY / SCALE], v.data)) {
         let currentEffect = touchableData[i];
         SoundPlayer.playUrl(currentEffect.audio); //play sound 
-        console.log(mainText.audio);
+        //console.log(wordEffect.length);
         //console.log(touchableData[i]);
       }
     })
   })
 
+
+
   return (
     <SafeAreaView>
-      <View style={{ position: 'absolute', width: deviceOrientations.width, zIndex: 10, alignItems: 'center' }}>
-        <View style={{flexDirection: 'row' }}>
+      <View style={{ position: 'absolute', flex: 1, width: deviceOrientations.width, zIndex: 10, flexDirection: 'row', alignItems: 'center'}}>
+        <Button title='pre' onPress={() => onRefresh()}></Button>
+        <Button title='refresh' onPress={() => onRefresh()}></Button>
+        <Button title='post' onPress={() => onRefresh()}></Button>
+      </View>
+      
+      <View style={{ position: 'absolute', width: deviceOrientations.width, zIndex: 2, alignItems: 'center' }}>
+        <View style={{ flexDirection: 'row' }}>
           {
-            mainText.text.map(mt =>
-              <Text style={{ color: 'black', fontSize: 25 , marginTop: 35}}>{mt} </Text>
+            mainText.text.map((mt, index) => (
+              wordEffect[index] ? <Text style={wordStyle.highlighted}>{mt} </Text> : <Text style={wordStyle.default}>{mt} </Text>
+            )
             )
           }
         </View>
@@ -182,5 +259,18 @@ const verticlesToPath = (data: string[], height: number): touchableData => {
   })
   return { data: newData, path: output + ' Z' };
 }
+
+const wordStyle = StyleSheet.create({
+  default: {
+    color: 'black',
+    fontSize: 25,
+    marginTop: 35
+  },
+  highlighted: {
+    color: 'red',
+    fontSize: 25,
+    marginTop: 35
+  }
+});
 
 export default StoryDetail;
