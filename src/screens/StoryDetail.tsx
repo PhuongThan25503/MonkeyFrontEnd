@@ -1,137 +1,145 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { Alert, Button, Dimensions, Platform, StatusBar, Text, View } from "react-native";
+import { Alert, Button, Dimensions, Platform, StatusBar, Text as RNText, View } from "react-native";
 
-import { Canvas, Fill, Image, Path, useFont, useImage } from '@shopify/react-native-skia';
+import { Canvas, Fill, Image, Path, useFont, useImage, Text as SKText, Group, rotate, vec } from '@shopify/react-native-skia';
 import { getPagesByStoryId } from '../utils/story';
 import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
-import Orientation from 'react-native-orientation-locker';
 import SoundPlayer from 'react-native-sound-player';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StyleSheet } from 'react-native';
-// interface RouteParams {
-//   id: number;
-// }
 
-// interface Route {
-//   params: RouteParams;
-//   route: RouteProp<RootStackParamList>
-// }
+/**
+ * type define here
+ */
+
 type touchableData = {
   path: string,
   data: number[]
 }
+
+type textConfig = {
+  x: number,
+  y: number,
+  rotate: number,
+}
+
 type touchableMediaData = {
   text: string,
   audio: string
+  config: textConfig,
 }
 
 type mainText = {
   text: string[],
   audio: string,
-  syncData: object[],
+  syncData: any[],
   duration: number,
 }
+
 /**
- * Config for canvas path
+ * constant difine here
  */
+
 const COLOR = "red";
 const OPACITY = 0.5;
 const SCALE = 0.55;
 const xFix = 14;
+const DELAY_FIX = 0;
+const DEGREE = Math.PI / 180;
+
 /**
- * 
+ * main function
  */
 
 function StoryDetail({ route }: any) {
-  const [pages, setPages] = useState<any[]>([]); //all page of story
-  const [currentPage, setCurrentPage] = useState<any>(); //id of page
-  const [currentPageNum, setCurrentPageNum] = useState(0); //order of page 
+
+  /**
+ * state defining below here
+ */
+
+  //const image = useImage('https://res.cloudinary.com/dck2nnfja/image/upload/v1693969149/MonkeyApp/Story/1/1.png');
 
   //device dimension
-  const [deviceOrientations, setDeviceOrientations] = useState({ width: Dimensions.get('screen').height, height: Dimensions.get('screen').width });
+  const deviceOrientations = { width: Dimensions.get('screen').width, height: Dimensions.get('screen').height };
 
-  //update the divice orientation dimension
-  const updateDeviceOrientation = () => {
-    setDeviceOrientations(Dimensions.get('screen'));
-  }
+  //all page of story
+  const [pages, setPages] = useState<any[]>([]);
+
+  //order of page 
+  const [currentPageNum, setCurrentPageNum] = useState(-1);
+
+  //array of boolean that difine at which word the highlight effect affected
+  const [wordEffect, setWordEffect] = useState<boolean[]>([]);
+
+  // array that contain polygon of touchable [x, y]...
+  const [verticlesArray, setVerticlesArray] = useState<touchableData[]>([]);
+
+  //data of each touchable : text ,sound, config ....
+  const [touchableData, setTouchableData] = useState<touchableMediaData[]>([]);
+
+  //image background of the page 
+  const [pageBackground, setPageBackground] = useState<string>();
 
   //main text for a page
   const [mainText, setMainText] = useState<mainText>({ audio: '', text: [''], syncData: [{}], duration: 0 });
 
-  //initialize basic info of the page
-  const initializePage = async () => {
-    getPagesByStoryId(route.params.id)
-      .then(data => {
-        setPages(data);
-        let currentPage = data?.page[currentPageNum];
-        setCurrentPage(currentPage);
-        setMainText({
-          text: currentPage.text?.text.split(' '),
-          audio: currentPage.text?.audio?.audio,
-          syncData: currentPage.text?.audio?.sync_data,
-          duration: currentPage.text?.audio?.duration,
-        });
-      })
-  };
+  //floating text that appear when use press on screen's item
+  const [popUpText, setPopUpText] = useState<touchableMediaData>({ audio: '', text: '', config: {x: 0, y: 0, rotate: 0}});
 
-  const [verticlesArray, setVerticlesArray] = useState<any[]>([]);
-  //data of each touchable
-  const [touchableData, setTouchableData] = useState<any[]>([]);
-
-  // render touchable into an array
-  const stringArrayToPolygonArray = () => {
-    let tempArray: touchableData[] = [];
-    let tempTouchData: touchableMediaData[] = [];
-    currentPage && currentPage.touch_.length > 0 && currentPage?.touch_?.map((t: any, i: number) => {
-
-      //get the media data
-      tempTouchData.push({ text: t?.text.text, audio: t?.text.audio?.audio })
-
-      //get the data of verticle for drwing path
-      tempArray.push(verticlesToPath(t?.data, deviceOrientations.height));
-
-    })
-    setVerticlesArray(tempArray); //save state
-    setTouchableData(tempTouchData); //save state
-  }
-
-
-  //play the main audio of the page
-  const playMainAudio = () => {
-    if (mainText?.audio && mainText.audio.length > 0) {
-      try {
-        SoundPlayer.playUrl(mainText?.audio);
-        let _onLoadingSubscription = SoundPlayer.addEventListener('FinishedLoadingURL', (data) => {
-          console.log("start");
-          playEffectText();
-        });
-        let _onFinishSubscription = SoundPlayer.addEventListener('FinishedPlaying', (data) => {
-          console.log("finished");
-          _onLoadingSubscription.remove(); //remove event listener 
-          _onFinishSubscription.remove(); //remove event listener 
-        });
-      } catch (error) {
-        console.log(error);
-      }
-    }
-  }
-  //when page change
-  useEffect(() => {
-    setWordEffect(mainText.syncData.map(s => false));
-    stringArrayToPolygonArray();
-    playMainAudio();
-  }, [currentPage])
-
+  //refreshing state
   const [refreshing, setRefreshing] = useState(false);
 
-  const onRefresh = () => {
-    setRefreshing(!refreshing);
+  /**
+   * useEffect state sequence
+   */
+
+  //#1 : initialize page
+  useEffect(() => {
+    initializePage();
+    setCurrentPageNum(0);
+  }, [])
+
+  /** #2 : after go to new page / go to story the first time , initialize neccessary data **/
+  useEffect(() => {
+    if (!pages) {
+      return;
+    }
+    if (!pages[currentPageNum]) {
+      return;
+    }
+    setPageBackground(pages[currentPageNum].background);
+    let currentPageText = pages[currentPageNum].text;
+    stringArrayToPolygonArray();
+    setWordEffect(new Array(currentPageText.audio.sync_data.length).fill(false));
+    setMainText({
+      text: currentPageText.text.split(' '),
+      audio: currentPageText.audio.audio,
+      syncData: currentPageText.audio.sync_data,
+      duration: currentPageText.audio.duration,
+    });
+  }, [currentPageNum, pages])
+
+  /** after preparing main text , play sound and effect **/
+  useEffect(() => {
+    playMainAudio();
+  }, [mainText])
+
+  /** if want to here audio again, then play again **/
+  useEffect(() => {
+    playMainAudio();
+  }, [refreshing])
+
+  /**
+   * functions used
+   */
+
+  //initialize basic info of the page
+  const initializePage = async () => {
+    await getPagesByStoryId(route.params.id)
+      .then(data => {
+        setPages(data.page);
+      })
   };
-
-
-  const [wordEffect, setWordEffect] = useState<boolean[]>([]);
-  //sync_text right here
-  const DELAY_FIX = 0;
 
   //play effect text when sound start :
   const playEffectText = () => {
@@ -162,64 +170,148 @@ function StoryDetail({ route }: any) {
       }
     }
   }
-  useEffect(() => {
-    playMainAudio();
-  }, [refreshing])
 
-  //initialize story setting
-  useEffect(() => {
-    StatusBar.setHidden(true); // hidden the status bar
-    updateDeviceOrientation();
-    //Orientation.lockToLandscape(); // change the view into landscape
-    Orientation.addLockListener(updateDeviceOrientation); // add event listener when update the orientation after rotating the screen
-    initializePage();
+  /** play the main audio of the page **/
+  const playMainAudio = () => {
+    if (!pages) {
+      return null;
+    }
+    if (mainText?.audio && mainText.audio.length > 0) {
+      try {
+        SoundPlayer.playUrl(mainText?.audio);
 
-    return () => {
-      //Orientation.unlockAllOrientations(); //unlock so that when jupm to previous (other screen), the screen will be unlocked
-      Orientation.removeDeviceOrientationListener(updateDeviceOrientation);
-    };
-  }, []);
+        //when finish loading, play audio
+        let _onLoadingSubscription = SoundPlayer.addEventListener('FinishedLoadingURL', (data) => {
+          //console.log("start");
+          playEffectText();
+        });
 
-  /**
-   * tapping processing here
-   */
-  const gesture = Gesture.Tap().onStart((e) => {
+        //when finish playing audio , remove listener to avoid error
+        let _onFinishSubscription = SoundPlayer.addEventListener('FinishedPlaying', (data) => {
+          //console.log("finished");
+          _onLoadingSubscription.remove(); //remove event listener 
+          _onFinishSubscription.remove(); //remove event listener 
+        });
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  }
+
+  /** render touchable into an array **/
+  const stringArrayToPolygonArray = () => {
+    if (!pages) {
+      return null;
+    }
+    let tempArray: touchableData[] = [];
+    let tempTouchData: touchableMediaData[] = [];
+    let currentPage = pages[currentPageNum];
+    currentPage && currentPage.touch_.length > 0 && currentPage.touch_.map((t: any, i: number) => {
+
+      //get the media data
+      tempTouchData.push({ text: t.text.text, audio: t.text.audio.audio, config: t.config })
+
+      //get the data of verticle for drwing path
+      tempArray.push(verticlesToPath(t.data, deviceOrientations.height));
+
+    })
+    setVerticlesArray(tempArray); //save state
+    setTouchableData(tempTouchData); //save state
+  }
+
+  /** change page handler **/
+  const pageChangeHandler = (isNext: boolean) => {
+    if (!pages) {
+      return null;
+    }
+    //can not go back in the first page
+    if (currentPageNum == 0 && !isNext) {
+      return;
+    }
+
+    //can not go next when reach the last page
+    if (currentPageNum == pages?.length - 1 && isNext) {
+      return;
+    }
+    if (isNext) {
+      setCurrentPageNum(currentPageNum + 1);
+    }
+    else {
+      setCurrentPageNum(currentPageNum - 1);
+    }
+  }
+
+  /** refresh handler **/
+  const onRefresh = () => {
+    if (!pages) {
+      initializePage();
+      return null;
+    }
+    setRefreshing(!refreshing);
+  };
+
+  /** change raw data to number array and string path **/
+  const verticlesToPath = (data: string[], height: number): touchableData => {
+    height = Math.round(height / SCALE);
+    let output = '';
+    let newData: number[] = data?.map((d: any, i: number) => { //data in array of number
+      let [a, b] = d.split(',');
+      [a, b] = [a.replace(/\D/g, ''), b.replace(/\D/g, '')]; //change '{a,b}' to [a,b]
+      let newX = (Number(a) - xFix); //config x depend on screen
+      let newY = (height - Number(b)); //config y depend on screen
+      d = [newX, newY];
+      output += (i == 0 ? 'M ' + newX + ' ' + newY : ' L ' + newX + ' ' + newY); //path
+      return d; //element of array number
+    })
+    return { data: newData, path: output + ' Z' };
+  }
+
+  /** tapping processing here **/
+  const onTap = Gesture.Tap().onStart((e) => {
     let pointInPolygon = require('point-in-polygon');
     verticlesArray.map((v, i) => {
       //if user touch to a touchable area
       if (pointInPolygon([e.absoluteX / SCALE, e.absoluteY / SCALE], v.data)) {
         let currentEffect = touchableData[i];
-        SoundPlayer.playUrl(currentEffect.audio); //play sound 
-        //console.log(wordEffect.length);
-        //console.log(touchableData[i]);
+        try {
+          SoundPlayer.playUrl(currentEffect.audio); //play sound 
+          let _onLoadingSubscription = SoundPlayer.addEventListener('FinishedLoadingURL', (data) => {
+            setPopUpText(touchableData[i]);
+          });
+          let _onFinishSubscription = SoundPlayer.addEventListener('FinishedPlaying', (data) => {
+            //setPopUpText({ audio: '', text: '', config: {x: 0, y: 0, rotate: 0}});
+            _onLoadingSubscription.remove();
+            _onFinishSubscription.remove();
+          });
+        } catch (error) {
+          console.log(error);
+        }
       }
     })
   })
 
-
-
   return (
     <SafeAreaView>
-      <View style={{ position: 'absolute', flex: 1, width: deviceOrientations.width, zIndex: 10, flexDirection: 'row', alignItems: 'center'}}>
-        <Button title='pre' onPress={() => onRefresh()}></Button>
+      <View style={{ position: 'absolute', flex: 1, width: deviceOrientations.width, zIndex: 10, flexDirection: 'row', alignItems: 'center' }}>
+        <Button title='pre' onPress={() => pageChangeHandler(false)}></Button>
         <Button title='refresh' onPress={() => onRefresh()}></Button>
-        <Button title='post' onPress={() => onRefresh()}></Button>
+        <Button title='post' onPress={() => pageChangeHandler(true)}></Button>
       </View>
-      
+
       <View style={{ position: 'absolute', width: deviceOrientations.width, zIndex: 2, alignItems: 'center' }}>
         <View style={{ flexDirection: 'row' }}>
           {
             mainText.text.map((mt, index) => (
-              wordEffect[index] ? <Text style={wordStyle.highlighted}>{mt} </Text> : <Text style={wordStyle.default}>{mt} </Text>
+              wordEffect[index] ? <RNText style={wordStyle.highlighted}>{mt} </RNText> : <RNText style={wordStyle.default}>{mt} </RNText>
             )
             )
           }
         </View>
       </View>
       <GestureHandlerRootView style={{ flex: 1 }}>
-        <GestureDetector gesture={gesture}>
+        <GestureDetector gesture={onTap}>
           <Canvas style={{ height: deviceOrientations.height, width: deviceOrientations.width }}>
-            <Image x={0} y={0} fit={'fitHeight'} height={deviceOrientations.height} width={deviceOrientations.width} image={useImage(currentPage?.background)}>
+            <Image x={0} y={0} fit={'fitHeight'} height={deviceOrientations.height} width={deviceOrientations.width} image={useImage(pageBackground)}>
             </Image>
             {
               verticlesArray.map((v: touchableData, i: number): any => (
@@ -232,7 +324,7 @@ function StoryDetail({ route }: any) {
                 />
               ))
             }
-            {/* <Text text={mainText.text} font={useFont(require('../assets/The-fragile-wind.ttf'), deviceOrientations.height * 0.08)} y={50} x={deviceOrientations.width * 0.3} /> */}
+            <SKText text={popUpText?.text} font={useFont(require('../assets/The-fragile-wind.ttf'), deviceOrientations.height * 0.08)} x={440 * SCALE} y={440 * SCALE} transform={[{rotate: 20 * DEGREE}]}/>
           </Canvas>
         </GestureDetector>
       </GestureHandlerRootView>
@@ -241,24 +333,8 @@ function StoryDetail({ route }: any) {
 }
 
 /**
- * convert raw data to path string that can be used
+ * Style
  */
-
-//change raw data to number array and string path
-const verticlesToPath = (data: string[], height: number): touchableData => {
-  height = Math.round(height / SCALE);
-  let output = '';
-  let newData: number[] = data?.map((d: any, i: number) => { //data in array of number
-    let [a, b] = d.split(',');
-    [a, b] = [a.replace(/\D/g, ''), b.replace(/\D/g, '')]; //change '{a,b}' to [a,b]
-    let newX = (Number(a) - xFix); //config x depend on screen
-    let newY = (height - Number(b)); //config y depend on screen
-    d = [newX, newY];
-    output += (i == 0 ? 'M ' + newX + ' ' + newY : ' L ' + newX + ' ' + newY); //path
-    return d; //element of array number
-  })
-  return { data: newData, path: output + ' Z' };
-}
 
 const wordStyle = StyleSheet.create({
   default: {

@@ -1,7 +1,9 @@
-import React from "react";
-import { Alert, StyleSheet, View } from "react-native";
+import { Canvas, useImage, Image } from "@shopify/react-native-skia";
+import React, { useEffect, useState } from "react";
+import { Alert, Dimensions, StyleSheet, View } from "react-native";
 import { TouchableOpacity, TouchableWithoutFeedback } from "react-native-gesture-handler";
 import { Svg, Path } from "react-native-svg";
+import { getPagesByStoryId } from "../utils/story";
 
 const path3 = [
   "{694,465}",
@@ -39,17 +41,35 @@ const d = path3.reduce((acc, curr, index) => {
 
 export default function Test() {
   console.log(d);
+  const [pages, setPages] = useState<any[]>();
+
+  const deviceOrientations = { width: Dimensions.get('screen').width, height: Dimensions.get('screen').height };
+  //const image = useImage('https://res.cloudinary.com/dck2nnfja/image/upload/v1693969149/MonkeyApp/Story/1/1.png');
+  const [image, setImage] = useState<string>();
+  //#1 : initialize page
+    //initialize basic info of the page
+    const initializePage = async () => {
+      await getPagesByStoryId(1)
+        .then(data => {
+          setPages(data.page);
+        })
+    };
+  useEffect(() => {
+    initializePage();
+  }, []);
+
+  useEffect(()=> {
+    if(!pages)
+    return; 
+    setImage(pages[0]?.background);
+  },[])
+
   return (
     <View style={styles.container}>
-      <TouchableOpacity>
-        <Svg height="300" width="300" viewBox="0 0 512 512">
-          <Path
-            fill="yellow"
-            d="M256.001,0.001l-68.378,220.956H0.001l175.472,127.411L107.093,511.999l148.908-108.631l148.907,108.631
-        l-68.379-163.631l175.472-127.411h-187.622L256.001,0.001z"
-          />
-        </Svg>
-      </TouchableOpacity>
+      <Canvas style={{ height: deviceOrientations.height, width: deviceOrientations.width }}>
+        <Image x={0} y={0} fit={'fitHeight'} height={deviceOrientations.height} width={deviceOrientations.width} image={useImage(image)}>
+        </Image>
+      </Canvas>
     </View>
   );
 }
