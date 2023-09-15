@@ -267,7 +267,8 @@ function StoryDetail({ route }: any) {
   }
 
   /** tapping processing here **/
-  const onTap = Gesture.Tap().onStart((e) => {
+  const onTap = Gesture.Tap()
+  .onStart((e) => {
     let pointInPolygon = require('point-in-polygon');
     verticlesArray.map((v, i) => {
       //if user touch to a touchable area
@@ -279,7 +280,7 @@ function StoryDetail({ route }: any) {
             setPopUpText(touchableData[i]);
           });
           let _onFinishSubscription = SoundPlayer.addEventListener('FinishedPlaying', (data) => {
-            //setPopUpText({ audio: '', text: '', config: {x: 0, y: 0, rotate: 0}});
+            setPopUpText({ audio: '', text: '', config: {x: 0, y: 0, rotate: 0}});
             _onLoadingSubscription.remove();
             _onFinishSubscription.remove();
           });
@@ -288,6 +289,9 @@ function StoryDetail({ route }: any) {
         }
       }
     })
+  })
+  .onEnd(() => {
+    //console.log(popUpText.config);
   })
 
   return (
@@ -313,6 +317,7 @@ function StoryDetail({ route }: any) {
           <Canvas style={{ height: deviceOrientations.height, width: deviceOrientations.width }}>
             <Image x={0} y={0} fit={'fitHeight'} height={deviceOrientations.height} width={deviceOrientations.width} image={useImage(pageBackground)}>
             </Image>
+            {/* path below is for visible debugging, delete whenever you like */}
             {
               verticlesArray.map((v: touchableData, i: number): any => (
                 <Path
@@ -324,7 +329,7 @@ function StoryDetail({ route }: any) {
                 />
               ))
             }
-            <SKText text={popUpText?.text} font={useFont(require('../assets/The-fragile-wind.ttf'), deviceOrientations.height * 0.08)} x={440 * SCALE} y={440 * SCALE} transform={[{rotate: 20 * DEGREE}]}/>
+            <SKText text={popUpText?.text} origin={vec(popUpText.config.x * SCALE, popUpText.config.y * SCALE)} font={useFont(require('../assets/The-fragile-wind.ttf'), deviceOrientations.height * 0.08)} x={popUpText.config.x * SCALE} y={popUpText.config.y * SCALE} transform={[{rotate: popUpText.config.rotate * DEGREE}]}/>
           </Canvas>
         </GestureDetector>
       </GestureHandlerRootView>
