@@ -81,10 +81,20 @@ function StoryDetail({ route }: any) {
   const [pageBackground, setPageBackground] = useState<string>();
 
   //main text for a page
-  const [mainText, setMainText] = useState<mainText>({ audio: '', text: [''], syncData: [{}], duration: 0 });
+  const [mainText, setMainText] = useState<mainText[]>([]);
+
+  //current main text that appear on the screen (if that screen has many texts)
+  const [currentMainText, setCurrentMainText] = useState(0);
+
+  //ready to play sound ?
+  const [isReadyToPlaySound, setIsReadyToPlaySound] = useState<boolean>(false);
 
   //floating text that appear when use press on screen's item
-  const [popUpText, setPopUpText] = useState<touchableMediaData>({ audio: '', text: '', config: {x: 0, y: 0, rotate: 0}});
+  const [popUpText, setPopUpText] = useState<touchableMediaData>({
+    audio: '',
+    text: '',
+    config: { x: 0, y: 0, rotate: 0 }
+  });
 
   //refreshing state
   const [refreshing, setRefreshing] = useState(false);
@@ -93,13 +103,13 @@ function StoryDetail({ route }: any) {
    * useEffect state sequence
    */
 
-  //#1 : initialize page
+  /** : initialize page **/
   useEffect(() => {
     initializePage();
     setCurrentPageNum(0);
   }, [])
 
-  /** #2 : after go to new page / go to story the first time , initialize neccessary data **/
+  /** # : after go to new page / go to story the first time , initialize neccessary data **/
   useEffect(() => {
     if (!pages) {
       return;
@@ -107,25 +117,52 @@ function StoryDetail({ route }: any) {
     if (!pages[currentPageNum]) {
       return;
     }
+    //set the background
     setPageBackground(pages[currentPageNum].background);
-    let currentPageText = pages[currentPageNum].text;
+    //set the point of array
     stringArrayToPolygonArray();
-    setWordEffect(new Array(currentPageText.audio.sync_data.length).fill(false));
-    setMainText({
-      text: currentPageText.text.split(' '),
-      audio: currentPageText.audio.audio,
-      syncData: currentPageText.audio.sync_data,
-      duration: currentPageText.audio.duration,
+    let currentPageText = pages[currentPageNum].text_config;
+    //set data for main text
+    let tempTextData: mainText[] = [];
+    currentPageText.map((c: { audio: { audio: any; duration: any; sync_data: string; }; text: { text: string; }; }) => {
+      tempTextData.push({
+        audio: c.audio.audio,
+        text: c.text.text.split(' '),
+        duration: c.audio.duration,
+        syncData: JSON.parse(c.audio.sync_data),
+      })
     });
+    setMainText(tempTextData);
+    setCurrentMainText(0); //set possition of the text to 0
+    console.log("change page num deteacted");
   }, [currentPageNum, pages])
 
-  /** after preparing main text , play sound and effect **/
+  /** after preparing main text ,set the current main text **/
   useEffect(() => {
-    playMainAudio();
+    console.log("change current main text detected");
+    console.log(mainText[currentMainText]);
+    setWordEffect(mainText[currentMainText]?.syncData.map(e => false));
+    setIsReadyToPlaySound(true);
+    console.log("change main text detected");
   }, [mainText])
+
+  /** if current main text has change, play the sound **/
+  useEffect(() => {
+    setIsReadyToPlaySound(true);
+  },[currentMainText])
+
+  /** play the sound **/ 
+  useEffect(()=> {
+    console.log("play sound");
+    if(isReadyToPlaySound){
+      playMainAudio();
+      setIsReadyToPlaySound(false);
+    }
+  },[isReadyToPlaySound])
 
   /** if want to here audio again, then play again **/
   useEffect(() => {
+    console.log("change play");
     playMainAudio();
   }, [refreshing])
 
@@ -142,7 +179,10 @@ function StoryDetail({ route }: any) {
   };
 
   //play effect text when sound start :
-  const playEffectText = () => {
+  const playEffectText = (mainText: mainText) => {
+    if (!pages) {
+      return null;
+    }
     let startTime = performance.now() + DELAY_FIX;
     let timer = setInterval(updateTimer.bind(null, startTime), 10);
     let wordIndex = 0;
@@ -176,25 +216,28 @@ function StoryDetail({ route }: any) {
     if (!pages) {
       return null;
     }
-    if (mainText?.audio && mainText.audio.length > 0) {
-      try {
-        SoundPlayer.playUrl(mainText?.audio);
+    try {
+      SoundPlayer.playUrl(mainText[currentMainText].audio);
 
-        //when finish loading, play audio
-        let _onLoadingSubscription = SoundPlayer.addEventListener('FinishedLoadingURL', (data) => {
-          //console.log("start");
-          playEffectText();
-        });
+      //when finish loading, play audio
+      let _onLoadingSubscription = SoundPlayer.addEventListener('FinishedLoadingURL', (data) => {
+        console.log("start");
+        playEffectText(mainText[currentMainText]);
+      });
 
-        //when finish playing audio , remove listener to avoid error
-        let _onFinishSubscription = SoundPlayer.addEventListener('FinishedPlaying', (data) => {
-          //console.log("finished");
-          _onLoadingSubscription.remove(); //remove event listener 
-          _onFinishSubscription.remove(); //remove event listener 
-        });
-      } catch (error) {
-        console.log(error);
-      }
+      //when finish playing audio , remove listener to avoid error
+      let _onFinishSubscription = SoundPlayer.addEventListener('FinishedPlaying', (data) => {
+        console.log("finished");
+        _onLoadingSubscription.remove(); //remove event listener 
+        _onFinishSubscription.remove(); //remove event listener 
+
+        if(currentMainText< mainText.length -1){
+          setCurrentMainText(currentMainText +1);
+          console.log("up current text pos to :" + (currentMainText + 1));
+        }
+      });
+    } catch (error) {
+      console.log(error);
     }
   }
 
@@ -268,31 +311,31 @@ function StoryDetail({ route }: any) {
 
   /** tapping processing here **/
   const onTap = Gesture.Tap()
-  .onStart((e) => {
-    let pointInPolygon = require('point-in-polygon');
-    verticlesArray.map((v, i) => {
-      //if user touch to a touchable area
-      if (pointInPolygon([e.absoluteX / SCALE, e.absoluteY / SCALE], v.data)) {
-        let currentEffect = touchableData[i];
-        try {
-          SoundPlayer.playUrl(currentEffect.audio); //play sound 
-          let _onLoadingSubscription = SoundPlayer.addEventListener('FinishedLoadingURL', (data) => {
-            setPopUpText(touchableData[i]);
-          });
-          let _onFinishSubscription = SoundPlayer.addEventListener('FinishedPlaying', (data) => {
-            setPopUpText({ audio: '', text: '', config: {x: 0, y: 0, rotate: 0}});
-            _onLoadingSubscription.remove();
-            _onFinishSubscription.remove();
-          });
-        } catch (error) {
-          console.log(error);
+    .onStart((e) => {
+      let pointInPolygon = require('point-in-polygon');
+      verticlesArray.map((v, i) => {
+        //if user touch to a touchable area
+        if (pointInPolygon([e.absoluteX / SCALE, e.absoluteY / SCALE], v.data)) {
+          let currentEffect = touchableData[i];
+          try {
+            SoundPlayer.playUrl(currentEffect.audio); //play sound 
+            let _onLoadingSubscription = SoundPlayer.addEventListener('FinishedLoadingURL', (data) => {
+              setPopUpText(touchableData[i]);
+            });
+            let _onFinishSubscription = SoundPlayer.addEventListener('FinishedPlaying', (data) => {
+              setPopUpText({ audio: '', text: '', config: { x: 0, y: 0, rotate: 0 } });
+              _onLoadingSubscription.remove();
+              _onFinishSubscription.remove();
+            });
+          } catch (error) {
+            console.log(error);
+          }
         }
-      }
+      })
     })
-  })
-  .onEnd(() => {
-    //console.log(popUpText.config);
-  })
+    .onEnd(() => {
+      console.log(isReadyToPlaySound);
+    })
 
   return (
     <SafeAreaView>
@@ -305,8 +348,8 @@ function StoryDetail({ route }: any) {
       <View style={{ position: 'absolute', width: deviceOrientations.width, zIndex: 2, alignItems: 'center' }}>
         <View style={{ flexDirection: 'row' }}>
           {
-            mainText.text.map((mt, index) => (
-              wordEffect[index] ? <RNText style={wordStyle.highlighted}>{mt} </RNText> : <RNText style={wordStyle.default}>{mt} </RNText>
+            wordEffect && mainText[currentMainText]?.text.map((mt, index) => (
+              wordEffect[index] ? <RNText key={index} style={wordStyle.highlighted}>{mt} </RNText> : <RNText key={index} style={wordStyle.default}>{mt} </RNText>
             )
             )
           }
@@ -329,7 +372,7 @@ function StoryDetail({ route }: any) {
                 />
               ))
             }
-            <SKText text={popUpText?.text} origin={vec(popUpText.config.x * SCALE, popUpText.config.y * SCALE)} font={useFont(require('../assets/The-fragile-wind.ttf'), deviceOrientations.height * 0.08)} x={popUpText.config.x * SCALE} y={popUpText.config.y * SCALE} transform={[{rotate: popUpText.config.rotate * DEGREE}]}/>
+            <SKText text={popUpText?.text} origin={vec(popUpText.config.x * SCALE, popUpText.config.y * SCALE)} font={useFont(require('../assets/The-fragile-wind.ttf'), deviceOrientations.height * 0.08)} x={popUpText.config.x * SCALE} y={popUpText.config.y * SCALE} transform={[{ rotate: popUpText.config.rotate * DEGREE }]} />
           </Canvas>
         </GestureDetector>
       </GestureHandlerRootView>
