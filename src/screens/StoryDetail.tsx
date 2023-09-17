@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { Alert, Button, Dimensions, Platform, StatusBar, Text as RNText, View } from "react-native";
-
-import { Canvas, Fill, Image, Path, useFont, useImage, Text as SKText, Group, rotate, vec } from '@shopify/react-native-skia';
+import Ionicons from "react-native-vector-icons/Ionicons";
+import { Canvas, Fill, Image, Path, useFont, useImage, Text as SKText, Group, rotate, vec, LinearGradient, SweepGradient, translate } from '@shopify/react-native-skia';
 import { getPagesByStoryId } from '../utils/story';
-import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
+import { Gesture, GestureDetector, GestureHandlerRootView, Swipeable, TouchableOpacity } from 'react-native-gesture-handler';
 import SoundPlayer from 'react-native-sound-player';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StyleSheet } from 'react-native';
@@ -43,7 +43,7 @@ type mainText = {
 const COLOR = "red";
 const OPACITY = 0.5;
 const SCALE = 0.55;
-const xFix = 14;
+const xFix = 15;
 const DELAY_FIX = 0;
 const DEGREE = Math.PI / 180;
 
@@ -96,6 +96,9 @@ function StoryDetail({ route }: any) {
     config: { x: 0, y: 0, rotate: 0 }
   });
 
+  //alowwed to go to the next page ?
+  const [lockPage, setLockPage] = useState(false);
+
   //refreshing state
   const [refreshing, setRefreshing] = useState(false);
 
@@ -140,7 +143,6 @@ function StoryDetail({ route }: any) {
   /** after preparing main text ,set the current main text **/
   useEffect(() => {
     console.log("change current main text detected");
-    console.log(mainText[currentMainText]);
     setWordEffect(mainText[currentMainText]?.syncData.map(e => false));
     setIsReadyToPlaySound(true);
     console.log("change main text detected");
@@ -148,21 +150,21 @@ function StoryDetail({ route }: any) {
 
   /** if current main text has change, play the sound **/
   useEffect(() => {
+    setWordEffect(mainText[currentMainText]?.syncData.map(e => false));
     setIsReadyToPlaySound(true);
-  },[currentMainText])
+  }, [currentMainText])
 
-  /** play the sound **/ 
-  useEffect(()=> {
+  /** play the sound **/
+  useEffect(() => {
     console.log("play sound");
-    if(isReadyToPlaySound){
+    if (isReadyToPlaySound) {
       playMainAudio();
       setIsReadyToPlaySound(false);
     }
-  },[isReadyToPlaySound])
+  }, [isReadyToPlaySound])
 
   /** if want to here audio again, then play again **/
   useEffect(() => {
-    console.log("change play");
     playMainAudio();
   }, [refreshing])
 
@@ -178,8 +180,9 @@ function StoryDetail({ route }: any) {
       })
   };
 
-  //play effect text when sound start :
+  /**  play effect text when sound start **/
   const playEffectText = (mainText: mainText) => {
+    setLockPage(true);
     if (!pages) {
       return null;
     }
@@ -195,9 +198,7 @@ function StoryDetail({ route }: any) {
       let elapsedTime = Math.floor(currentTime - startTime);
 
       if (syncData[wordIndex].s <= elapsedTime) {
-        // console.log(syncData[wordIndex].w);
-        // console.log(wordEffect);
-        setWordEffect(wordEffect.map((w, index) => (index == wordIndex) ? true : false))
+        setWordEffect(wordEffect?.map((w, index) => (index == wordIndex) ? true : false))
         if (wordIndex >= syncData.length - 1) { //when reach another word, switch
           if (elapsedTime >= mainText.duration) {
             // Stop the timer
@@ -222,6 +223,7 @@ function StoryDetail({ route }: any) {
       //when finish loading, play audio
       let _onLoadingSubscription = SoundPlayer.addEventListener('FinishedLoadingURL', (data) => {
         console.log("start");
+        _onLoadingSubscription.remove();
         playEffectText(mainText[currentMainText]);
       });
 
@@ -231,9 +233,11 @@ function StoryDetail({ route }: any) {
         _onLoadingSubscription.remove(); //remove event listener 
         _onFinishSubscription.remove(); //remove event listener 
 
-        if(currentMainText< mainText.length -1){
-          setCurrentMainText(currentMainText +1);
+        if (currentMainText < mainText.length - 1) {
+          setCurrentMainText(currentMainText + 1);
           console.log("up current text pos to :" + (currentMainText + 1));
+        } else {
+          setLockPage(false);
         }
       });
     } catch (error) {
@@ -276,10 +280,14 @@ function StoryDetail({ route }: any) {
     if (currentPageNum == pages?.length - 1 && isNext) {
       return;
     }
-    if (isNext) {
+
+    //can not go next when reach the last page
+    if (currentPageNum < (pages?.length - 1) && isNext && !lockPage) {
       setCurrentPageNum(currentPageNum + 1);
     }
-    else {
+
+    //cannot go back in first page
+    if (currentPageNum != 0 && !isNext && !lockPage) {
       setCurrentPageNum(currentPageNum - 1);
     }
   }
@@ -287,10 +295,13 @@ function StoryDetail({ route }: any) {
   /** refresh handler **/
   const onRefresh = () => {
     if (!pages) {
-      initializePage();
+      //initializePage();
       return null;
     }
-    setRefreshing(!refreshing);
+    if(!lockPage) {
+      setCurrentMainText(0) ;// set main text to the first sentence
+      setRefreshing(!refreshing); // while playing audio, no action permited
+    }
   };
 
   /** change raw data to number array and string path **/
@@ -307,6 +318,45 @@ function StoryDetail({ route }: any) {
       return d; //element of array number
     })
     return { data: newData, path: output + ' Z' };
+  }
+
+  /**
+   * gesture handler
+   */
+  const [gestureFlag, setGestureFlag] = useState(0); //flag for gesture decide if trigger animation or not
+  const [nextPageFlag, setNextPageFlag] = useState(false); // flag for going to next page or not
+  const [postPageFlag, setPostPageFlag] = useState(false); // flag for going to previous page or not
+  const [opacityEffect, setOpacityEffect] = useState(1); // if intent to changepapge, set the opacity effect
+
+  const gestureAnim = (dir: number, absX: number, absY: number) => {
+    if (dir == 1) {//next
+      //if user intend to go to the next page, trigger the animation 
+      if (gestureFlag && absX >= deviceOrientations.width / 1.6) {
+        setAnimPath('M ' + absX + ' ' + absY + ' L ' + (absX + (deviceOrientations.width - absX) / 3) + ' ' + deviceOrientations.height + ' L ' + (deviceOrientations.width - ((deviceOrientations.width - absX + absY / 4) / 7)) + ' 0' + ' Z');
+      }
+      //if user want , then change page
+      if (gestureFlag && absX < deviceOrientations.width / 1.6) {
+        setNextPageFlag(true);
+        setOpacityEffect(0.5);
+      } else {
+        setNextPageFlag(false);
+        setOpacityEffect(1);
+      }
+    }
+    if (dir == -1) {
+      //if user intend to go to the next page, trigger the animation 
+      if (gestureFlag && absX <= deviceOrientations.width / 3) {
+        setAnimPath('M ' + absX + ' ' + absY + ' L ' + (absX * 0.5) + ' ' + deviceOrientations.height + ' L ' + (absX * 0.3) + ' 0' + ' Z');
+      }
+      //if user want , then change page
+      if (gestureFlag && absX > deviceOrientations.width / 3) {
+        setPostPageFlag(true);
+        setOpacityEffect(0.5);
+      } else {
+        setPostPageFlag(false);
+        setOpacityEffect(1);
+      }
+    }
   }
 
   /** tapping processing here **/
@@ -334,15 +384,43 @@ function StoryDetail({ route }: any) {
       })
     })
     .onEnd(() => {
-      console.log(isReadyToPlaySound);
+      console.log(pages.length);
     })
 
+  const [animPath, setAnimPath] = useState('');
+  /**Drag gesture handler **/
+  const onDrag = Gesture.Pan()
+    .onStart((e) => {
+      console.log('panning...');
+      if (e.absoluteX > deviceOrientations.width - deviceOrientations.width / 3) setGestureFlag(1); // if gesture is swipe from left to right , it means co to previous page
+      if (e.absoluteX < deviceOrientations.width / 3) setGestureFlag(-1); // if gesture is swipe from right to left, it means go to right page
+    })
+    .onUpdate((e) => {
+      if (gestureFlag != 0) { // if use intend to change page , trigger the aim
+        gestureAnim(gestureFlag, e.absoluteX, e.absoluteY)
+      }
+    })
+    .onEnd((e) => {
+      if (nextPageFlag) {
+        pageChangeHandler(true);
+      }
+      if (postPageFlag) {
+        pageChangeHandler(false);
+      }
+      setNextPageFlag(false);
+      setPostPageFlag(false);
+      setGestureFlag(0);
+      setOpacityEffect(1);
+      setAnimPath('');
+    })
   return (
-    <SafeAreaView>
+    <SafeAreaView style={{ opacity: opacityEffect }}>
+      <StatusBar hidden={true}></StatusBar>
+
       <View style={{ position: 'absolute', flex: 1, width: deviceOrientations.width, zIndex: 10, flexDirection: 'row', alignItems: 'center' }}>
-        <Button title='pre' onPress={() => pageChangeHandler(false)}></Button>
-        <Button title='refresh' onPress={() => onRefresh()}></Button>
-        <Button title='post' onPress={() => pageChangeHandler(true)}></Button>
+        <TouchableOpacity onPress={() => onRefresh()} style={wordStyle.icon}>
+          <Ionicons name='reload' color={'black'} size={25}></Ionicons>
+        </TouchableOpacity>
       </View>
 
       <View style={{ position: 'absolute', width: deviceOrientations.width, zIndex: 2, alignItems: 'center' }}>
@@ -355,13 +433,14 @@ function StoryDetail({ route }: any) {
           }
         </View>
       </View>
+
       <GestureHandlerRootView style={{ flex: 1 }}>
-        <GestureDetector gesture={onTap}>
+        <GestureDetector gesture={Gesture.Race(onDrag, onTap)}>
           <Canvas style={{ height: deviceOrientations.height, width: deviceOrientations.width }}>
             <Image x={0} y={0} fit={'fitHeight'} height={deviceOrientations.height} width={deviceOrientations.width} image={useImage(pageBackground)}>
             </Image>
             {/* path below is for visible debugging, delete whenever you like */}
-            {
+            {/* {
               verticlesArray.map((v: touchableData, i: number): any => (
                 <Path
                   key={i}
@@ -371,7 +450,17 @@ function StoryDetail({ route }: any) {
                   color={COLOR}
                 />
               ))
-            }
+            } */}
+            <Path
+              //transform={[{ scale: SCALE }]}
+              path={animPath}
+              color={COLOR}
+            >
+              <SweepGradient
+                c={vec(128, 128)}
+                colors={["cyan", "magenta", "yellow", "cyan"]}
+              />
+            </Path>
             <SKText text={popUpText?.text} origin={vec(popUpText.config.x * SCALE, popUpText.config.y * SCALE)} font={useFont(require('../assets/The-fragile-wind.ttf'), deviceOrientations.height * 0.08)} x={popUpText.config.x * SCALE} y={popUpText.config.y * SCALE} transform={[{ rotate: popUpText.config.rotate * DEGREE }]} />
           </Canvas>
         </GestureDetector>
@@ -394,6 +483,11 @@ const wordStyle = StyleSheet.create({
     color: 'red',
     fontSize: 25,
     marginTop: 35
+  },
+  icon: {
+    backgroundColor: 'aqua',
+    padding: 15,
+    borderRadius: 20
   }
 });
 
