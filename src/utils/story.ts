@@ -13,7 +13,7 @@ export const getAllStory = async () => {
   }
 }
 
-export const getPagesByStoryId = async (id : number) => {
+export const getPagesByStoryId = async (id: number) => {
   try {
     let apiUrl = IP + '/api/getPagesByStoryId/' + id;
     let response = await axios.get(apiUrl);
@@ -23,13 +23,13 @@ export const getPagesByStoryId = async (id : number) => {
   }
 }
 
-export const getPageDetailById = async (id:number) => {
-  try{
-    let apiUrl = IP + '/api/getPageById/' +id;
+export const getPageDetailById = async (id: number) => {
+  try {
+    let apiUrl = IP + '/api/getPageById/' + id;
     let response = await axios.get(apiUrl);
     console.log(response.data);
     return response.data;
-  } catch(error) {
+  } catch (error) {
     console.log(error);
   }
 }
@@ -53,18 +53,12 @@ export const defaultPage: PageInterface = {
   page_num: 0,
 }
 
-//this will be use to revert from raw_data to supper_raw_data save in database 
-const verticlesToPath = (data: string[]) => {
-  let xFix =0;
-  let output = '';
-  data = data.map((d : any, i) => {
-    let [a, b] = d.split(',');
-    [a, b] = [a.replace(/\D/g, ''), b.replace(/\D/g, '')];
-    let newX = (Number(a) - xFix);
-    let newY =  Number(b);
-    d= [newX, newY];
-    output += (newX + ',' + newY + '|');
-    return d;
-  })
-  return {data: data, output: output };
+// turn text into normal form
+export const normalizeText = (str: string) => {
+  // normalize the string using NFC form
+  str = str.normalize("NFC");
+  // remove any non-alphanumeric characters using a negated character class
+  str = str.replace(/[^A-Za-z0-9]/g, "").toLowerCase();
+
+  return str;
 }

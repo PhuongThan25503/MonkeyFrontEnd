@@ -1,12 +1,15 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { Alert, Button, Dimensions, Platform, StatusBar, Text as RNText, View } from "react-native";
+import { Alert, Button, Dimensions, Platform, StatusBar, Text as RNText, View, Animated } from "react-native";
+
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { Canvas, Fill, Image, Path, useFont, useImage, Text as SKText, Group, rotate, vec, LinearGradient, SweepGradient, translate } from '@shopify/react-native-skia';
-import { getPagesByStoryId } from '../utils/story';
 import { Gesture, GestureDetector, GestureHandlerRootView, Swipeable, TouchableOpacity } from 'react-native-gesture-handler';
 import SoundPlayer from 'react-native-sound-player';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StyleSheet } from 'react-native';
+
+import { getPagesByStoryId, normalizeText } from '../utils/story';
+import { anim, jumpAnim } from '../utils/animation';
 
 /**
  * type define here
@@ -32,8 +35,14 @@ type touchableMediaData = {
 type mainText = {
   text: string[],
   audio: string,
-  syncData: any[],
+  syncData: syncData[],
   duration: number,
+}
+
+type syncData = {
+  e: number,
+  s: number,
+  w: string
 }
 
 /**
@@ -56,8 +65,6 @@ function StoryDetail({ route }: any) {
   /**
  * state defining below here
  */
-
-  //const image = useImage('https://res.cloudinary.com/dck2nnfja/image/upload/v1693969149/MonkeyApp/Story/1/1.png');
 
   //device dimension
   const deviceOrientations = { width: Dimensions.get('screen').width, height: Dimensions.get('screen').height };
@@ -102,6 +109,13 @@ function StoryDetail({ route }: any) {
   //refreshing state
   const [refreshing, setRefreshing] = useState(false);
 
+  //state for highlighting the animated text
+  const [animatedHighlight, setAnimatedHighlight] = useState(false);
+
+  //animation for highlighting text 
+  const jumpAnimValue = useRef(new Animated.Value(-10/1.5)).current;
+  jumpAnim(jumpAnimValue, -10, 300);
+
   /**
    * useEffect state sequence
    */
@@ -137,15 +151,15 @@ function StoryDetail({ route }: any) {
     });
     setMainText(tempTextData);
     setCurrentMainText(0); //set possition of the text to 0
-    console.log("change page num deteacted");
+    //console.log("change page num deteacted");
   }, [currentPageNum, pages])
 
   /** after preparing main text ,set the current main text **/
   useEffect(() => {
-    console.log("change current main text detected");
+    //console.log("change current main text detected");
     setWordEffect(mainText[currentMainText]?.syncData.map(e => false));
     setIsReadyToPlaySound(true);
-    console.log("change main text detected");
+    //console.log("change main text detected");
   }, [mainText])
 
   /** if current main text has change, play the sound **/
@@ -156,7 +170,8 @@ function StoryDetail({ route }: any) {
 
   /** play the sound **/
   useEffect(() => {
-    console.log("play sound");
+    setAnimatedHighlight(false); // reset the animation effect
+    //console.log("play sound");
     if (isReadyToPlaySound) {
       playMainAudio();
       setIsReadyToPlaySound(false);
@@ -165,6 +180,7 @@ function StoryDetail({ route }: any) {
 
   /** if want to here audio again, then play again **/
   useEffect(() => {
+    setAnimatedHighlight(false); // reset the animation effect
     playMainAudio();
   }, [refreshing])
 
@@ -222,20 +238,20 @@ function StoryDetail({ route }: any) {
 
       //when finish loading, play audio
       let _onLoadingSubscription = SoundPlayer.addEventListener('FinishedLoadingURL', (data) => {
-        console.log("start");
+        //console.log("start");
         _onLoadingSubscription.remove();
         playEffectText(mainText[currentMainText]);
       });
 
       //when finish playing audio , remove listener to avoid error
       let _onFinishSubscription = SoundPlayer.addEventListener('FinishedPlaying', (data) => {
-        console.log("finished");
+        //console.log("finished");
         _onLoadingSubscription.remove(); //remove event listener 
         _onFinishSubscription.remove(); //remove event listener 
 
         if (currentMainText < mainText.length - 1) {
           setCurrentMainText(currentMainText + 1);
-          console.log("up current text pos to :" + (currentMainText + 1));
+          //console.log("up current text pos to :" + (currentMainText + 1)); // if there is multiple text on a page, go to the next text
         } else {
           setLockPage(false);
         }
@@ -298,8 +314,8 @@ function StoryDetail({ route }: any) {
       //initializePage();
       return null;
     }
-    if(!lockPage) {
-      setCurrentMainText(0) ;// set main text to the first sentence
+    if (!lockPage) {
+      setCurrentMainText(0);// set main text to the first sentence
       setRefreshing(!refreshing); // while playing audio, no action permited
     }
   };
@@ -370,10 +386,19 @@ function StoryDetail({ route }: any) {
           try {
             SoundPlayer.playUrl(currentEffect.audio); //play sound 
             let _onLoadingSubscription = SoundPlayer.addEventListener('FinishedLoadingURL', (data) => {
-              setPopUpText(touchableData[i]);
+              setPopUpText(touchableData[i]);// set pop up text
+              mainText[currentMainText].syncData.map((mt, k) => {
+                //highlight the word if the word chosen match the word in top-text
+                if (normalizeText(mt.w) == normalizeText(touchableData[i].text)) {
+                  console.log(mt.w + ' ' + touchableData[i].text);
+                  setWordEffect(mainText[currentMainText].syncData.map((w, index) => index == k ? true : false)); // highlight word
+                  setAnimatedHighlight(true); //trigger the animation
+                }
+              })
             });
             let _onFinishSubscription = SoundPlayer.addEventListener('FinishedPlaying', (data) => {
-              setPopUpText({ audio: '', text: '', config: { x: 0, y: 0, rotate: 0 } });
+              setPopUpText({ audio: '', text: '', config: { x: 0, y: 0, rotate: 0 } }); //reset state
+              setWordEffect(mainText[currentMainText].syncData.map((w) => false)); // reset state
               _onLoadingSubscription.remove();
               _onFinishSubscription.remove();
             });
@@ -382,9 +407,6 @@ function StoryDetail({ route }: any) {
           }
         }
       })
-    })
-    .onEnd(() => {
-      console.log(pages.length);
     })
 
   const [animPath, setAnimPath] = useState('');
@@ -397,7 +419,7 @@ function StoryDetail({ route }: any) {
     })
     .onUpdate((e) => {
       if (gestureFlag != 0) { // if use intend to change page , trigger the aim
-        gestureAnim(gestureFlag, e.absoluteX, e.absoluteY)
+        gestureAnim(gestureFlag, Math.round(e.absoluteX),Math.round(e.absoluteY))
       }
     })
     .onEnd((e) => {
@@ -427,7 +449,12 @@ function StoryDetail({ route }: any) {
         <View style={{ flexDirection: 'row' }}>
           {
             wordEffect && mainText[currentMainText]?.text.map((mt, index) => (
-              wordEffect[index] ? <RNText key={index} style={wordStyle.highlighted}>{mt} </RNText> : <RNText key={index} style={wordStyle.default}>{mt} </RNText>
+              wordEffect[index] ?
+                (animatedHighlight ?
+                  <Animated.Text key={index} style={StyleSheet.compose(wordStyle.highlighted, { transform: [{ translateY: jumpAnimValue }] })}>{mt} </Animated.Text>
+                  : <RNText key={index} style={wordStyle.highlighted}>{mt} </RNText>
+                )
+                : <RNText key={index} style={wordStyle.default}>{mt} </RNText>
             )
             )
           }
@@ -458,7 +485,7 @@ function StoryDetail({ route }: any) {
             >
               <SweepGradient
                 c={vec(128, 128)}
-                colors={["cyan", "magenta", "yellow", "cyan"]}
+                colors={["cyan", "white", "cyan"]}
               />
             </Path>
             <SKText text={popUpText?.text} origin={vec(popUpText.config.x * SCALE, popUpText.config.y * SCALE)} font={useFont(require('../assets/The-fragile-wind.ttf'), deviceOrientations.height * 0.08)} x={popUpText.config.x * SCALE} y={popUpText.config.y * SCALE} transform={[{ rotate: popUpText.config.rotate * DEGREE }]} />

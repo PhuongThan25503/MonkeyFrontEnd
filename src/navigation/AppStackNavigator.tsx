@@ -50,7 +50,7 @@ export default function AppStackNavigatior(){
           <Stack.Screen
             name='Test'
             component={Test}
-            options={{ title: 'Test', orientation: 'portrait' }}
+            options={{headerShown: false, title: 'Test', orientation: 'landscape' }}
           />
         </Stack.Navigator>
       </NavigationContainer>

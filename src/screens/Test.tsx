@@ -1,8 +1,7 @@
-import { Canvas, useImage, Image } from "@shopify/react-native-skia";
+import { Canvas, useImage, Image, Path, SweepGradient, vec } from "@shopify/react-native-skia";
 import React, { useEffect, useState } from "react";
-import { Alert, Dimensions, StyleSheet, View } from "react-native";
-import { TouchableOpacity, TouchableWithoutFeedback } from "react-native-gesture-handler";
-import { Svg, Path } from "react-native-svg";
+import { Alert, Dimensions, StatusBar, StyleSheet, View } from "react-native";
+import { Gesture, GestureDetector, GestureHandlerRootView, TouchableOpacity, TouchableWithoutFeedback } from "react-native-gesture-handler";
 import { getPagesByStoryId } from "../utils/story";
 
 const path3 = [
@@ -47,29 +46,65 @@ export default function Test() {
   //const image = useImage('https://res.cloudinary.com/dck2nnfja/image/upload/v1693969149/MonkeyApp/Story/1/1.png');
   const [image, setImage] = useState<string>();
   //#1 : initialize page
-    //initialize basic info of the page
-    const initializePage = async () => {
-      await getPagesByStoryId(1)
-        .then(data => {
-          setPages(data.page);
-        })
-    };
+  //initialize basic info of the page
+  const initializePage = async () => {
+    await getPagesByStoryId(1)
+      .then(data => {
+        setPages(data.page);
+      })
+  };
   useEffect(() => {
     initializePage();
   }, []);
-
-  useEffect(()=> {
-    if(!pages)
-    return; 
+  const [animPath, setAnimPath] = useState('');
+  useEffect(() => {
+    if (!pages)
+      return;
     setImage(pages[0]?.background);
-  },[])
+  }, [pages])
 
+  const gestureAnim = (dir: number, absX: number, absY: number) => {
+    if (dir == 1) {//next
+      setAnimPath('M ' + absX + ' ' + absY + ' L ' + (absX + (deviceOrientations.width - absX) / 3) + ' ' + deviceOrientations.height + ' L ' + (deviceOrientations.width - ((deviceOrientations.width - absX + absY / 4) / 7)) + ' 0' + ' Z');
+    }
+  }
+  const [gestureFlag, setGestureFlag] = useState(0); //flag for gesture decide if trigger animation or not
+
+  const onDrag = Gesture.Pan()
+    .onStart((e) => {
+      console.log('panning...');
+      if (e.absoluteX > deviceOrientations.width - deviceOrientations.width / 3) setGestureFlag(1); // if gesture is swipe from left to right , it means co to previous page
+      if (e.absoluteX < deviceOrientations.width / 3) setGestureFlag(-1); // if gesture is swipe from right to left, it means go to right page
+    })
+    .onUpdate((e) => {
+      gestureAnim(gestureFlag, Math.round(e.absoluteX), Math.round(e.absoluteY))
+    })
+    .onEnd(()=>{
+      setAnimPath('');
+    })
   return (
     <View style={styles.container}>
-      <Canvas style={{ height: deviceOrientations.height, width: deviceOrientations.width }}>
-        <Image x={0} y={0} fit={'fitHeight'} height={deviceOrientations.height} width={deviceOrientations.width} image={useImage(image)}>
-        </Image>
-      </Canvas>
+      <StatusBar hidden={true}></StatusBar>
+      <GestureHandlerRootView>
+        <GestureDetector gesture={onDrag}>
+          <Canvas style={{ height: deviceOrientations.height, width: deviceOrientations.width }}>
+            <Image x={0} y={0} fit={'fitHeight'} height={deviceOrientations.height} width={deviceOrientations.width} image={useImage(image)}>
+            </Image>
+            <Path
+              //transform={[{ scale: SCALE }]}
+              path={animPath}
+              color={'red'}
+            >
+              <SweepGradient
+                c={vec(128, 128)}
+                colors={["cyan", "white", "cyan"]}
+              />
+            </Path>
+          </Canvas>
+        </GestureDetector>
+
+
+      </GestureHandlerRootView>
     </View>
   );
 }
