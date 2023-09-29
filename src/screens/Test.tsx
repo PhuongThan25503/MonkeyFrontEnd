@@ -1,4 +1,4 @@
-import { Canvas, useImage, Image, Path, SweepGradient, vec } from "@shopify/react-native-skia";
+import { Canvas, useImage, Image, Path, SweepGradient, vec, Shadow, Rect } from "@shopify/react-native-skia";
 import React, { useEffect, useState } from "react";
 import { Alert, Dimensions, StatusBar, StyleSheet, View } from "react-native";
 import { Gesture, GestureDetector, GestureHandlerRootView, TouchableOpacity, TouchableWithoutFeedback } from "react-native-gesture-handler";
@@ -39,7 +39,7 @@ const d = path3.reduce((acc, curr, index) => {
 }, "");
 
 export default function Test() {
-  console.log(d);
+  //console.log(d);
   const [pages, setPages] = useState<any[]>();
 
   const deviceOrientations = { width: Dimensions.get('screen').width, height: Dimensions.get('screen').height };
@@ -57,19 +57,26 @@ export default function Test() {
     initializePage();
   }, []);
   const [animPath, setAnimPath] = useState('');
+  const [hiddenScene, setHiddenScane] = useState(deviceOrientations.width);
   useEffect(() => {
     if (!pages)
       return;
     setImage(pages[0]?.background);
   }, [pages])
 
+
   const gestureAnim = (dir: number, absX: number, absY: number) => {
     if (dir == 1) {//next
-      setAnimPath('M ' + absX + ' ' + absY + ' L ' + (absX + (deviceOrientations.width - absX) / 3) + ' ' + deviceOrientations.height + ' L ' + (deviceOrientations.width - ((deviceOrientations.width - absX + absY / 4) / 7)) + ' 0' + ' Z');
+      let A = {x: absX, y: absY}
+      let C = {x: (deviceOrientations.width - ((deviceOrientations.width - absX + absY / 4) / 7)), y: 0}
+      let B = {x: A.x + (C.x - A.x)/4,y: deviceOrientations.height}
+      let fixCurve1 = {x : A.x +(C.x - A.x)/2 , y: C.y + (A.y- C.y)/1.5};
+      let fixCurve2 = {x: B.x , y: A.y + (B.y - A.y)/1.25};
+      setAnimPath('M ' + A.x + ' '+ A.y + ' Q ' + fixCurve1.x + ' ' + fixCurve1.y + ' '+ C.x + ' ' + C.y + ' L '+B.x + ' ' + B.y + ' Q '+ fixCurve2.x + ' '+fixCurve2.y + ' ' + A.x + ' ' + A.y + ' Z');
     }
   }
   const [gestureFlag, setGestureFlag] = useState(0); //flag for gesture decide if trigger animation or not
-
+  
   const onDrag = Gesture.Pan()
     .onStart((e) => {
       console.log('panning...');
@@ -79,7 +86,7 @@ export default function Test() {
     .onUpdate((e) => {
       gestureAnim(gestureFlag, Math.round(e.absoluteX), Math.round(e.absoluteY))
     })
-    .onEnd(()=>{
+    .onEnd(() => {
       setAnimPath('');
     })
   return (
@@ -88,21 +95,28 @@ export default function Test() {
       <GestureHandlerRootView>
         <GestureDetector gesture={onDrag}>
           <Canvas style={{ height: deviceOrientations.height, width: deviceOrientations.width }}>
-            <Image x={0} y={0} fit={'fitHeight'} height={deviceOrientations.height} width={deviceOrientations.width} image={useImage(image)}>
+            <Image x={hiddenScene} y={0} fit={'fitHeight'} height={deviceOrientations.height} width={deviceOrientations.width} image={useImage(image)}>
             </Image>
             <Path
-              //transform={[{ scale: SCALE }]}
               path={animPath}
-              color={'red'}
+              color={'#eee4b0'}
             >
-              <SweepGradient
-                c={vec(128, 128)}
-                colors={["cyan", "white", "cyan"]}
+              <Shadow
+                dx={25}
+                dy={15}
+                blur={35}
+                color="black"
+              />
+              <Shadow
+                inner
+                dx={-35}
+                dy={0}
+                blur={25}
+                color="#93b8c4"
               />
             </Path>
           </Canvas>
         </GestureDetector>
-
 
       </GestureHandlerRootView>
     </View>

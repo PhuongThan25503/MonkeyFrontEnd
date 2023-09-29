@@ -10,7 +10,7 @@ export default function UploadButton({Icons, pressHandler}:Props) {
   return (
     <TouchableOpacity onPress={() => pressHandler()} style={AudioFormStyles.optionButton}>
       <View>
-        <Text style={AudioFormStyles.text}>Upload using direct link</Text>
+        <Text style={AudioFormStyles.text}>Upload audio file</Text>
       </View>
       {Icons}
     </TouchableOpacity>

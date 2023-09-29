@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "824619122719",
+    "project_id": "monkey-sa60",
+    "storage_bucket": "monkey-sa60.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:824619122719:android:9fe8643db9a756791d552a",
+        "android_client_info": {
+          "package_name": "com.monkeyapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDlUCqepep6XwYR31wHYUA7hwNJ-og_uPw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

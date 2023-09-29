@@ -7,8 +7,13 @@ export type RootStackParamList= {
   UserPersonalInfo: undefined;
   StoryDetail: {id:number};
   Test: undefined;
+  History: undefined;
+  AudioUpload: undefined;
+  TextUpload: undifined;
 }
-
+export type StackNavProps = {
+  navigation: NativeStackNavigationProp<RootStackParamList>;
+}
 //user credentials 
 export type UserCredential = {
   username: string;
@@ -51,4 +56,45 @@ export type PageInterface = {
   story_id: number,
   background: string,
   page_num: number,
+}
+
+/**
+ * type define here
+ */
+
+export type touchableData = {
+  path: string,
+  data: number[]
+}
+
+export type textConfig = {
+  x: number,
+  y: number,
+  rotate: number,
+}
+
+export type touchableMediaData = {
+  text: string,
+  audio: string
+  config: textConfig,
+}
+
+export type mainText = {
+  text: string[],
+  audio: string,
+  syncData: syncData[],
+  duration: number,
+}
+
+export type syncData = {
+  e: number,
+  s: number,
+  w: string
+}
+
+export type audioData = {
+  text: number,
+  audio: string,
+  syncData: string,
+  duration: number,
 }

@@ -1,7 +1,11 @@
 import { IP } from "../config";
 import axios from "axios";
-import { PageInterface, StoryInterface } from "../types";
+import { PageInterface, StoryInterface, touchableMediaData } from "../types";
 
+type touchableData = {
+  path: string,
+  data: number[]
+}
 export const getAllStory = async () => {
   try {
     let apiUrl = IP + '/api/getAllStory';
@@ -62,3 +66,21 @@ export const normalizeText = (str: string) => {
 
   return str;
 }
+
+/** change raw data to number array and string path **/
+export const verticlesToPath = (data: string[], height: number, scale: number, xFix: number): touchableData => {
+  height = Math.round(height / scale);
+  let output = '';
+  let newData: number[] = data?.map((d: any, i: number) => { //data in array of number
+    let [a, b] = d.split(',');
+    [a, b] = [a.replace(/\D/g, ''), b.replace(/\D/g, '')]; //change '{a,b}' to [a,b]
+    let newX = (Number(a) - xFix); //config x depend on screen
+    let newY = (height - Number(b)); //config y depend on screen
+    d = [newX, newY];
+    output += (i == 0 ? 'M ' + newX + ' ' + newY : ' L ' + newX + ' ' + newY); //path
+    return d; //element of array number
+  })
+  return { data: newData, path: output + ' Z' };
+}
+
+
