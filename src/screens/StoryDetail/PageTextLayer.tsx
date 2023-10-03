@@ -15,8 +15,8 @@ export default function PageTextLayer({ deviceWidth, mainText, currentMainText, 
   }, [wordEffectListener])
 
   return (
-    <View style={{ position: 'absolute', width: deviceWidth, zIndex: 2, alignItems: 'center' }}>
-      <View style={{ flexDirection: 'row' }}>
+    <View style={{ position: 'absolute', width: deviceWidth, zIndex: 2, alignItems: 'center'}}>
+      <View style={{ flexDirection: 'row' , flexWrap:'wrap', maxWidth: '60%'}}>
         {
           wordEffect && mainText[currentMainText]?.text.map((mt: string, index: number) => (
             wordEffect[index] ?

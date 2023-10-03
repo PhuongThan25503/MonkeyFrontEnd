@@ -1,6 +1,8 @@
 import { IP } from "../config";
 import axios from "axios";
 import { PageInterface, StoryInterface, touchableMediaData } from "../types";
+import RNFS from 'react-native-fs';
+import { getAsyncData, saveAsyncData } from "./asyncStorage";
 
 type touchableData = {
   path: string,
@@ -21,11 +23,45 @@ export const getPagesByStoryId = async (id: number) => {
   try {
     let apiUrl = IP + '/api/getPagesByStoryId/' + id;
     let response = await axios.get(apiUrl);
+    saveImages(response.data.page, id);
     return response.data;
   } catch (error) {
     console.log(error);
   }
 }
+
+export const saveImages = async (pages: any, id: number) => {
+  let story: any[] = [];
+  await Promise.all(pages.map(async (p: any, index: number) => {
+    const data = await downloadImage(p.background, "story", id, index + '.png');
+    story.push({
+      page: index,
+      image: data
+    });
+  }));
+  story.sort((a, b) => a.page - b.page);
+  saveAsyncData('story', story);
+};
+
+
+const downloadImage = async (url: string, dir: string, id: number, name: string) => {
+  try {
+    const response = await fetch(url);
+    const fileName = `${name}`;
+    const path = `${RNFS.DocumentDirectoryPath}/${dir}/${id}/${fileName}`;
+    await RNFS.mkdir(`${RNFS.DocumentDirectoryPath}/${dir}/${id}`);
+    const blob = await response.blob();
+    const reader = new FileReader();
+    reader.readAsDataURL(blob);
+    reader.onloadend = async () => {
+      const base64data = (reader.result as string).split(',')[1];
+      await RNFS.writeFile(path, base64data, 'base64');
+    };
+    return "file://"+path;
+  } catch (error) {
+    console.log(error);
+  }
+};
 
 export const getPageDetailById = async (id: number) => {
   try {
@@ -59,6 +95,9 @@ export const defaultPage: PageInterface = {
 
 // turn text into normal form
 export const normalizeText = (str: string) => {
+  if (!str){
+    return'';
+  }
   // normalize the string using NFC form
   str = str.normalize("NFC");
   // remove any non-alphanumeric characters using a negated character class
@@ -66,6 +105,19 @@ export const normalizeText = (str: string) => {
 
   return str;
 }
+
+export const normalizeTextWithoutSpace = (str: string) => {
+  if (!str){
+    return'';
+  }
+  // normalize the string using NFC form
+  str = str.normalize("NFC");
+  // remove any non-alphanumeric characters using a negated character class
+  str = str.replace(/[^A-Za-z0-9 ]/g, "").toLowerCase();
+
+  return str;
+}
+
 
 /** change raw data to number array and string path **/
 export const verticlesToPath = (data: string[], height: number, scale: number, xFix: number): touchableData => {
@@ -84,3 +136,7 @@ export const verticlesToPath = (data: string[], height: number, scale: number, x
 }
 
 
+export function replaceWord(sentence : string, words: string[], replacedBy: string) {
+  const pattern = new RegExp(words.join('|'), 'g');
+  return sentence.replace(pattern, replacedBy);
+}

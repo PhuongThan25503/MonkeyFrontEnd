@@ -30,7 +30,7 @@ function Story({ navigation }: Props) {
           <ScrollView>
             {
               story?.map(s =>
-                <StoryItem onPressProp={() => navigation.navigate('StoryDetail', { id: s.story_id })}
+                <StoryItem onPressProp={() => navigation.navigate('IconStory', { id: s.story_id })}
                 key={s.story_id}
                 name={s.name}
                 thumbnail={s.thumbnail} author={""} />)

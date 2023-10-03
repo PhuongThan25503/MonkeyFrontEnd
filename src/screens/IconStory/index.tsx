@@ -3,6 +3,7 @@ import { ActivityIndicator, Button, Dimensions, StatusBar } from "react-native";
 
 import { Image, useImage } from '@shopify/react-native-skia';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { create } from 'zustand';
 
 import { getPagesByStoryId, replaceWord } from '../../utils/story';
 import { asyncStoryData, mainText } from '../../types';
@@ -13,20 +14,21 @@ import SyncTextLayer from './SyncTextLayer';
 import { useIsLoadingStore } from '../../utils/globalState';
 import { getAsyncData } from '../../utils/asyncStorage';
 import { IconData } from '../../data/iconData';
+import { IconizeSyncData } from './utils';
 
 /**
  * main function
  */
 
 
-function StoryDetail({ route }: any) {
-  let IconUnique = IconData.map(i => i.word);
+function IconStory({ route }: any) {
+
   //device dimension
   const deviceOrientations = { width: Dimensions.get('screen').width, height: Dimensions.get('screen').height };
   //all page of story
   const [pages, setPages] = useState<any[]>([]);
   //order of page 
-  const [currentPageNum, setCurrentPageNum] = useState(0);
+  const [currentPageNum, setCurrentPageNum] = useState(1);
   //main text for a page
   const [mainText, setMainText] = useState<mainText[]>([]);
   //current main text that appear on the screen (if that screen has many texts)
@@ -57,16 +59,19 @@ function StoryDetail({ route }: any) {
     let tempTextData: mainText[] = [];
     currentPageText?.map((c: { audio: { audio: any; duration: any; sync_data: string; }; text: { text: string; }; }) => {
       let syncData = JSON.parse(c.audio.sync_data);
+
       tempTextData.push({
         audio: c.audio.audio,
-        text: syncData.map((s:any) => s.w),
+        text: syncData.map((s: any) => s.w),
         duration: c.audio.duration,
         syncData: syncData,
       })
     });
-    
-    setMainText(tempTextData);
+    let iconList = IconData[currentPageNum].map(i => i.word.split(' '));
 
+    IconizeSyncData(tempTextData[0].syncData, iconList);
+    tempTextData[0].text = tempTextData[0].syncData.map(s => s.w)
+    setMainText(tempTextData);
     getAsyncData('story').then(data => setAsyncData(JSON.parse(data)))
 
   }, [pages, currentPageNum])
@@ -92,7 +97,9 @@ function StoryDetail({ route }: any) {
   const setGlobalCurrentMainText = (a: number) => {
     setCurrentMainText(a);
   }
+
   SyncTextLayer({ mainText, setGlobalWordEffect, setGlobalCurrentMainText });
+
   return (
     <SafeAreaView style={{ width: deviceOrientations.width, height: deviceOrientations.height }}>
       <StatusBar hidden={true}></StatusBar>
@@ -102,8 +109,9 @@ function StoryDetail({ route }: any) {
         mainText={mainText}
         currentMainText={currentMainText}
         wordEffectListener={GlobalWordEffect}
-        animatedHighlight={GlobalAnimatedHighlight}>
-      </PageTextLayer> 
+        animatedHighlight={GlobalAnimatedHighlight}
+        iconData={IconData[currentPageNum]}>
+      </PageTextLayer>
 
       <CanvasLayer
         deviceWidth={deviceOrientations.width}
@@ -123,11 +131,11 @@ function StoryDetail({ route }: any) {
             height={deviceOrientations.height}
             width={deviceOrientations.width}
             image={useImage(asyncData[currentPageNum]?.image)}>
-          </Image> 
+          </Image>
         }
       </CanvasLayer>
     </SafeAreaView>
   );
 }
 
-export default StoryDetail;
+export default IconStory;

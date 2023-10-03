@@ -10,6 +10,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "@react-native-async-storage/async-storage": "^1.19.3",
     "@react-navigation/native": "^6.1.7",
     "@react-navigation/native-stack": "^6.9.13",
     "@shopify/react-native-skia": "^0.1.202",
@@ -36,7 +37,8 @@
     "react-native-track-player": "^3.2.0",
     "react-native-vector-icons": "^10.0.0",
     "react-native-webview": "^13.5.1",
-    "yup": "^1.2.0"
+    "yup": "^1.2.0",
+    "zustand": "^4.4.1"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

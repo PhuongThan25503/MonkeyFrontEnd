@@ -8,6 +8,7 @@ export const anim = (anim: Animated.Value, to: number, time: number) => {
     toValue: to,
     duration: time,
     useNativeDriver: true,
+    easing: Easing.ease,
   }).start();
 };
 
@@ -32,3 +33,25 @@ export const jumpAnim = (position: Animated.Value, to: number, time: number) => 
   // Loop the sequence indefinitely
   Animated.loop(sequence).start();
 }
+
+export const scaleAnim = (position: Animated.Value, to: number, time: number) => {
+  // Create a sequence of four animations
+    const sequence = Animated.sequence([
+      Animated.timing(position, {
+        toValue: to,
+        duration: time* 0.5,
+        useNativeDriver: true,
+        easing: Easing.ease,
+      }),
+      Animated.timing(position, {
+        toValue: 1,
+        duration: time* 0.5,
+        useNativeDriver: true,
+        easing: Easing.ease,
+      })
+    ]);
+   sequence.start();
+}
+
+
+

@@ -12,3 +12,4 @@ export const DEGREE = Math.PI / 180;
 
 //scale for app
 export const SCALE = 0.55;
+

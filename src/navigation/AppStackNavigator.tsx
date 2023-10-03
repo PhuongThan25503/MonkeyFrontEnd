@@ -13,6 +13,7 @@ import History from "../screens/History";
 import AudioManagement from "../screens/Audio";
 import AudioUploadScreen from "../screens/Audio/AudioUpload";
 import TextUploadScreen from "../screens/Audio/TextUpload";
+import IconStory from "../screens/IconStory";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -41,6 +42,11 @@ export default function AppStackNavigatior() {
           options={{ headerShown: false, orientation: 'landscape' }}
         />
         <Stack.Screen
+          name='IconStory'
+          component={gestureHandlerRootHOC(IconStory)}
+          options={{ headerShown: false, orientation: 'landscape' }}
+        />
+        <Stack.Screen
           name='Login'
           component={Login}
           options={{ orientation: 'portrait' }}
@@ -63,12 +69,12 @@ export default function AppStackNavigatior() {
         <Stack.Screen
           name='AudioUpload'
           component={AudioUploadScreen}
-          options={{headerShown: false, title: 'Upload audio', orientation: 'portrait' }}
+          options={{ headerShown: false, title: 'Upload audio', orientation: 'portrait' }}
         />
         <Stack.Screen
           name='TextUpload'
           component={TextUploadScreen}
-          options={{headerShown: false, title: 'Upload text', orientation: 'portrait' }}
+          options={{ headerShown: false, title: 'Upload text', orientation: 'portrait' }}
         />
       </Stack.Navigator>
     </NavigationContainer>

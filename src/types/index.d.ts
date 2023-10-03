@@ -10,6 +10,7 @@ export type RootStackParamList= {
   History: undefined;
   AudioUpload: undefined;
   TextUpload: undifined;
+  IconStory:undefined;
 }
 export type StackNavProps = {
   navigation: NativeStackNavigationProp<RootStackParamList>;
@@ -97,4 +98,9 @@ export type audioData = {
   audio: string,
   syncData: string,
   duration: number,
+}
+
+export type asyncStoryData = {
+  image: string,
+  page: number
 }
