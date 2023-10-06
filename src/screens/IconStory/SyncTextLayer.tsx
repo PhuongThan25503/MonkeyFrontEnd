@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import { mainText } from '../../types';
 import SoundPlayer from "react-native-sound-player";
-import { useTextEffect } from "../../utils/globalState";
+import { useTextEffect } from "./globalStates/index";
 
-export default function SyncTextLayer({mainText, setGlobalWordEffect, setGlobalCurrentMainText} : any) {
+export default function SyncTextLayer({ mainText, setGlobalCurrentMainText }: any) {
 
   //ready to play sound ?
   const [isReadyToPlaySound, setIsReadyToPlaySound] = useState<boolean>(false);
@@ -11,24 +11,27 @@ export default function SyncTextLayer({mainText, setGlobalWordEffect, setGlobalC
   //current main text that appear on the screen (if that screen has many texts)
   const [currentMainText, setCurrentMainText] = useState(0);
 
+  const setTextEffect = useTextEffect((state: any) => state.setEffectIndex);
+
+  const timerId = useRef<any>();
+
   /** after preparing main text ,set the current main text **/
   useEffect(() => {
     if (!mainText && mainText?.length == 0) {
       return;
     }
-    setGlobalWordEffect(mainText[0]?.syncData.map(() => false)); // prepare the first text
+    setTextEffect(-1);
     setIsReadyToPlaySound(true);
     setCurrentMainText(0);
   }, [mainText])
 
   /** if current main text has change, play the sound **/
   useEffect(() => {
-    setGlobalWordEffect(mainText[currentMainText]?.syncData.map(() => false));
+    setTextEffect(-1);
     setGlobalCurrentMainText(currentMainText);
     setIsReadyToPlaySound(true);
   }, [currentMainText])
 
-  var textLength = mainText[currentMainText]?.syncData.length;
   /** play the sound **/
   useEffect(() => {
     if (isReadyToPlaySound) {
@@ -41,22 +44,24 @@ export default function SyncTextLayer({mainText, setGlobalWordEffect, setGlobalC
   const playEffectText = (mainText: mainText) => {
     let startTime = performance.now();
     let timer = setInterval(updateTimer.bind(null, startTime), 10);
+    clearInterval(timerId.current);
+    timerId.current = timer;
+    console.log(timerId);
     let wordIndex = 0;
     let syncData = mainText.syncData;
     let switchEffectFlag = true; // flag to reduce the render times
     function updateTimer(startTime: number) {
-
       // Get the current time
       let currentTime = performance.now();
       // Calculate the elapsed time
       let elapsedTime = Math.floor(currentTime - startTime);
       if (elapsedTime >= mainText.duration) { // when reach the end, remove timer
-        setGlobalWordEffect(new Array(textLength).fill(false));
+        setTextEffect(-1);
         clearInterval(timer);
       }
       if (syncData[wordIndex]?.s <= elapsedTime && switchEffectFlag) {
         switchEffectFlag = false;
-        setGlobalWordEffect(new Array(textLength).fill(false).map((w, index) => (index == wordIndex) ? true : false))
+        setTextEffect(wordIndex);
         if (wordIndex < syncData.length) { // if not yet reach limit , go to next
           wordIndex++;
         }

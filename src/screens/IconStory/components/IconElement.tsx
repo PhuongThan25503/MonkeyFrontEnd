@@ -2,6 +2,7 @@ import { Animated, Image, StyleSheet, Text, TouchableOpacity, View } from "react
 import { IconStyle } from "./IconStyle";
 import { useRef, useState } from "react";
 import { anim, scaleAnim } from "../../../utils/animation";
+import { playTextAudio } from "../utils";
 
 export default function IconElement({ durationAnim, Anim, iconData }: any) {
   const scaleAnimValue = useRef(new Animated.Value(1)).current;
@@ -10,9 +11,11 @@ export default function IconElement({ durationAnim, Anim, iconData }: any) {
   const [displayText, setDisplayText] = useState<'none' | 'flex' | undefined>('none');
 
   scaleAnim(scaleAnimValue, 1.2, durationAnim);
+
   const handlePress = () => {
     if (buttonToggle) {
-      anim(scaleAnimValue2, 0.75, 200)
+      anim(scaleAnimValue2, 0.75, 200);
+      playTextAudio(iconData.sound);
       setDisplayText('flex');
     }
     else {
@@ -24,29 +27,17 @@ export default function IconElement({ durationAnim, Anim, iconData }: any) {
 
   return (
     <TouchableOpacity onPress={handlePress}>
-      {
-        Anim ?
-          <Animated.View style={StyleSheet.compose({ width: iconData.image_width, height: iconData.image_height }, IconStyle.IconBound)}>
-            <Animated.View style={StyleSheet.compose({ width: iconData.image_width, height: iconData.image_height, transform: [{ scale: scaleAnimValue }] }, IconStyle.IconTag)}>
-              <Image
-                resizeMode="contain"
-                source={iconData.imageLocal}
-                style={IconStyle.image}
-              />
-            </Animated.View>
-          </Animated.View>
-          :
-          <Animated.View style={StyleSheet.compose({ width: iconData.image_width, height: iconData.image_height }, IconStyle.IconBound)}>
-            <Animated.View style={StyleSheet.compose({ width: iconData.image_width, height: iconData.image_height, transform: [{ scale: scaleAnimValue2 }] }, IconStyle.IconTag)}>
-              <Image
-                resizeMode="contain"
-                source={iconData.imageLocal}
-                style={IconStyle.image}
-              />
-            </Animated.View>
-            <Text numberOfLines={1} ellipsizeMode="clip" style={StyleSheet.compose(IconStyle.text, { display: displayText })}>{iconData.word}</Text>
-          </Animated.View>
-      }
+      <Animated.View style={StyleSheet.compose({ width: iconData.image_width, height: iconData.image_height }, IconStyle.IconBound)}>
+        <Animated.View style={StyleSheet.compose({ width: iconData.image_width, height: iconData.image_height, transform: [{ scale: Anim ? scaleAnimValue : scaleAnimValue2 }] }, IconStyle.IconTag)}>
+          <Image
+            resizeMode="contain"
+            source={iconData.imageLocal}
+            style={IconStyle.image}
+          />
+        </Animated.View>
+        {Anim ? <></> : <Text numberOfLines={1} ellipsizeMode="clip" style={StyleSheet.compose(IconStyle.text, { display: displayText })}>{iconData.word}</Text>}
+      </Animated.View>
+
     </TouchableOpacity>
   )
 }

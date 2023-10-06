@@ -10,3 +10,9 @@ export const useTextEffect = create((set) => ({
   effectIndex: -1,
   setEffectIndex: (index: number) => set(() => ({ effectIndex: index })),
 }));
+
+export const useAnimatedHighlight = create((set) => ({
+  effectOn: false,
+  setAnimatedOn: (status: boolean) => set(() => ({ effectOn: status})),
+}));
+

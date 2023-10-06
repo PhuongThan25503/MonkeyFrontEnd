@@ -29,7 +29,7 @@ export default function AppStackNavigatior() {
         <Stack.Screen
           name='Story'
           component={Story}
-          options={{ orientation: 'landscape' }}
+          options={{headerShown: false, orientation: 'landscape' }}
         />
         <Stack.Screen
           name='Audio'

@@ -2,47 +2,26 @@ import React, { useEffect, useState } from "react";
 import { Alert, Dimensions, Image, StatusBar, StyleSheet, View } from "react-native";
 import RNFS from 'react-native-fs';
 import { useStore } from "zustand";
+import { useTextEffect } from "../utils/globalState";
+import Indicator from "./components/Indicator/Indicator";
+import Octicons from "react-native-vector-icons/Octicons"
+import { Canvas, Path } from "@shopify/react-native-skia";
+import DirectionButton from "./components/DirectionButton";
 
-
-
+const { width, height } = Dimensions.get('window');
 export default function Test() {
-  const [image, setImages] = useState('');
-  useEffect(() => {
-    downloadImage("https://res.cloudinary.com/dck2nnfja/image/upload/v1693969152/MonkeyApp/Story/1/5.png","story",1, "testImage.png");
-    setImages(`${RNFS.DocumentDirectoryPath}/story/1/testImage.png`);  
-    console.log(image);
-  }, []) 
+  console.log('M ' + '0 ' + height + ' Q ' + width / 2 + ' ' + (height - 200) + ' ' + width / 2 + ' ' + height + ' L ' + width + ' ' + height+' Z');
   return (
-    <View style={styles.container}> 
-      <StatusBar hidden={true}></StatusBar>
-      <Image source={{ uri: `file://${image}` }} style={{ height:Dimensions.get('window').height , width: Dimensions.get("window").width}} />
-    </View>
+    <View></View>
   );
- 
+
 }
-const styles = StyleSheet.create({
+const styles = StyleSheet.create({ 
   container: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    borderColor: 'red',
+    borderWidth: 3
   },
 });
-
-const downloadImage = async (url: string,dir : string,id: number, name:string) => {
-  try {
-    const response = await fetch(url);
-    const fileName = `${name}`;
-    const path = `${RNFS.DocumentDirectoryPath}/${dir}/${id}/${fileName}`;
-    await RNFS.mkdir(`${RNFS.DocumentDirectoryPath}/${dir}/${id}`);
-    const blob = await response.blob();
-    const reader = new FileReader(); 
-    reader.readAsDataURL(blob);
-    reader.onloadend = async () => {
-      const base64data = (reader.result as string).split(',')[1];
-      await RNFS.writeFile(path, base64data, 'base64');
-      console.log('Image saved successfully!');
-    };
-  } catch (error) {
-    console.log(error);
-  }
-};

@@ -155,7 +155,7 @@ export const IconizeSyncData = (tempTextData: any, iconList: string[][]) => {
         if (normalizeText(tempTextData[index + n].w) == normalizeText(i[n])) {
           if (n > 0) {
             tempTextData[index].e = tempTextData[index + n].e;
-            tempTextData[index].w = tempTextData[index].w + ' '+ tempTextData[index + n].w;
+            tempTextData[index].w = tempTextData[index].w + ' ' + tempTextData[index + n].w;
             tempTextData.splice(index + n, 1);
           }
         } else {
@@ -165,6 +165,26 @@ export const IconizeSyncData = (tempTextData: any, iconList: string[][]) => {
       }
     })
   })
-  console.log(tempTextData)
   return tempTextData[0];
+}
+
+/** play the main audio of the page **/
+export const playTextAudio = (sound: any) => {
+  try {
+    SoundPlayer.playUrl(sound);
+
+    //when finish loading, play audio
+    let _onLoadingSubscription = SoundPlayer.addEventListener('FinishedLoadingURL', (data) => {
+      _onLoadingSubscription.remove();
+    });
+
+    //when finish playing audio , remove listener to avoid error
+    let _onFinishSubscription = SoundPlayer.addEventListener('FinishedPlaying', (data) => {
+      _onLoadingSubscription.remove(); //remove event listener 
+      _onFinishSubscription.remove(); //remove event listener 
+
+    });
+  } catch (error) {
+    console.log(error);
+  }
 }

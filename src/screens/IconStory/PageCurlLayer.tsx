@@ -2,18 +2,19 @@ import { useEffect, useState } from 'react';
 
 import { Path, Shadow } from '@shopify/react-native-skia';
 import { Gesture } from 'react-native-gesture-handler';
+import { useTextEffect } from './globalStates';
 
 export default function PageCurlLayer({
   deviceWidth,
   deviceHeight,
   pageDirection,
   gestureHandler }: any) {
-
   const [animPath, setAnimPath] = useState('');
   var gestureDir = 0;
   var nextPageFlag = false; // flag for going to next page or not
   var postPageFlag = false; // flag for going to previous page or not
 
+  const setEffectIndex = useTextEffect((state:any) => state.setEffectIndex)
   const gestureAnim = (dir: number, absX: number, absY: number) => {
     if (dir == 1) {//next
       //if user intend to go to the next page, trigger the animation 
@@ -44,7 +45,6 @@ export default function PageCurlLayer({
         postPageFlag = true;
       } else {
         postPageFlag = false;
-
       }
     }
   }
@@ -62,9 +62,11 @@ export default function PageCurlLayer({
     })
     .onEnd((e) => {
       if (nextPageFlag) {
+        setEffectIndex(-1);
         pageDirection({ status: 1, action: "next page" }); // status 
       }
       if (postPageFlag) {
+        setEffectIndex(-1);
         pageDirection({ status: -1, action: "post page" }); // status
       }
       nextPageFlag = false;

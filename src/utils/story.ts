@@ -19,6 +19,15 @@ export const getAllStory = async () => {
   }
 }
 
+export const getAllTypesOfStory = async () => {
+  try {
+    let apiUrl = IP + '/api/getAllType';
+    let response = await axios.get(apiUrl);
+    return response.data;
+  } catch (error) {
+    console.log(error)
+  }
+}
 export const getPagesByStoryId = async (id: number) => {
   try {
     let apiUrl = IP + '/api/getPagesByStoryId/' + id;
@@ -57,7 +66,7 @@ const downloadImage = async (url: string, dir: string, id: number, name: string)
       const base64data = (reader.result as string).split(',')[1];
       await RNFS.writeFile(path, base64data, 'base64');
     };
-    return "file://"+path;
+    return "file://" + path;
   } catch (error) {
     console.log(error);
   }
@@ -95,8 +104,8 @@ export const defaultPage: PageInterface = {
 
 // turn text into normal form
 export const normalizeText = (str: string) => {
-  if (!str){
-    return'';
+  if (!str) {
+    return '';
   }
   // normalize the string using NFC form
   str = str.normalize("NFC");
@@ -107,8 +116,8 @@ export const normalizeText = (str: string) => {
 }
 
 export const normalizeTextWithoutSpace = (str: string) => {
-  if (!str){
-    return'';
+  if (!str) {
+    return '';
   }
   // normalize the string using NFC form
   str = str.normalize("NFC");
@@ -136,7 +145,7 @@ export const verticlesToPath = (data: string[], height: number, scale: number, x
 }
 
 
-export function replaceWord(sentence : string, words: string[], replacedBy: string) {
+export function replaceWord(sentence: string, words: string[], replacedBy: string) {
   const pattern = new RegExp(words.join('|'), 'g');
   return sentence.replace(pattern, replacedBy);
 }
