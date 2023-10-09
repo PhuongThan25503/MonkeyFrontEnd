@@ -3,7 +3,7 @@ import { gestureHandlerRootHOC } from "react-native-gesture-handler";
 import Home from "../screens/Home";
 import Story from "../screens/Story";
 import Audio from "../screens/Audio/Audio";
-import StoryDetail from "../screens/StoryDetail/index";
+
 import Login from "../screens/Login";
 import UserPersonalInfo from "../screens/UserPersonalInfo";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -14,6 +14,8 @@ import AudioManagement from "../screens/Audio";
 import AudioUploadScreen from "../screens/Audio/AudioUpload";
 import TextUploadScreen from "../screens/Audio/TextUpload";
 import IconStory from "../screens/IconStory";
+import StoryList from "../screens/StoryList";
+import StoryDetail from "../screens/StoryDetail";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -75,6 +77,11 @@ export default function AppStackNavigatior() {
           name='TextUpload'
           component={TextUploadScreen}
           options={{ headerShown: false, title: 'Upload text', orientation: 'portrait' }}
+        />
+        <Stack.Screen
+          name='StoryList'
+          component={StoryList}
+          options={{ headerShown: false, title: 'Story List', orientation: 'landscape' }}
         />
       </Stack.Navigator>
     </NavigationContainer>

@@ -1,5 +1,6 @@
-import { StyleSheet } from "react-native";
-export const StoryStyle = StyleSheet.create({
+import { Dimensions, StyleSheet } from "react-native";
+const {width} = Dimensions.get('window')
+export const StoryListStyle = StyleSheet.create({
   text: {
     height: '25%',
     color: 'black',
@@ -14,8 +15,8 @@ export const StoryStyle = StyleSheet.create({
     textShadowRadius: 10 
   },
   ViewWrap: {
-    width:'100%',
-    height: '60%',
+    flex:1,
+    borderWidth: 10,
     flexDirection: 'row',
     alignItems: 'center',
     alignContent: 'space-around',
@@ -43,11 +44,17 @@ export const StoryStyle = StyleSheet.create({
     height: '100%',
   }, 
   ViewBound:{
-    width: '100%',
+    width: width,
     flexDirection: 'row',
-    flexWrap: 'wrap' ,
-    alignContent: 'center',
-    borderWidth: 2,
-    borderColor: 'yellow'
+    flexWrap: 'wrap',
+    gap: width*0.02,
+    backgroundColor: 'white'
+  },
+  ScrollViewBound:{
+    flex:1,
+    flexDirection: 'row',
+    paddingLeft: width * 0.035,
+    paddingTop: 30,
+    backgroundColor: 'white'
   }
 });

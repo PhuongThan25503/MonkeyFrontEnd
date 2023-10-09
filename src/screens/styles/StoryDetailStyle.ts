@@ -9,7 +9,6 @@ export const StoryDetailStyle = StyleSheet.create({
   },
   canvas: {
     flex: 1,
-    //transform: [{scaleY: -1}]
     borderWidth: 2,
     borderColor: 'red',
     backgroundColor: 'red'

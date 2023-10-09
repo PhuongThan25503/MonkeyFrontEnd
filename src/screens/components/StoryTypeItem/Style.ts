@@ -1,18 +1,32 @@
 import { Dimensions, StyleSheet } from "react-native";
 
 export const ItemType = StyleSheet.create({
-  ItemStyle:{
-    width: '75%',
-    height: '70%',
-    backgroundColor: 'white',
-  },
-  ItemStyleBound:{
-    width: '30%',
+  ItemStyleBoundCover:{
+    width: '60%',
     height: '100%',
     alignItems: 'center',
-    alignContent: 'center'
+    alignContent: 'center',
+    borderColor: '#90ebfe',
+    borderWidth: 2,
+    borderRadius: 25
+  },
+  ItemStyleBound:{
+    width: '80%',
+    height: '100%',
+    alignItems: 'center',
+    alignContent: 'center',
+    borderColor: '#90ebfe',
+    borderWidth: 2,
+    borderRadius: 25,
+    
+  },
+  TouchableBound:{
+    alignItems: 'center',
+    alignContent: 'center',
   },
   image:{
+    position:'absolute',
+    borderRadius: 25,
     width: '100%',
     height: '100%',
   },
@@ -21,9 +35,23 @@ export const ItemType = StyleSheet.create({
     height: '90%'
   },
   nonChosenItem:{
-    height: '40%',
-    width: '25%',
+    height: '20%',
+    width: '20%',
     alignItems: 'center',
     alignContent: 'center'
+  },
+  text:{
+    padding: 10,
+    color: 'white',
+    textAlign: 'center',
+    fontWeight: 'bold',
+    fontSize: 20
+  },
+  textBox:{
+    width: '100%',
+    borderRadius: 25,
+    borderWidth: 2,
+    borderColor: 'white',
+    backgroundColor: '#4bffd9'
   }
 })

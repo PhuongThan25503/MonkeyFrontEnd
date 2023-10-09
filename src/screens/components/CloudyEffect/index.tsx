@@ -4,27 +4,20 @@ import { Animated, Button, Dimensions, Easing } from "react-native";
 
 import { Canvas, Path, runSpring, runTiming, useValue } from "@shopify/react-native-skia";
 import { StoryStyle } from "../../styles/StoryStyle";
+import CloudyThreeCurve from "./CloudyThreeCurves";
+import CloudyTenCurve from "./CloudyTenCurves";
 
 type Props = {
   CANVAS_RATIO2: number
+  color: string
+  type: "threeCurve" | "tenCurve"
 }
-export default function CloudyEffect({ CANVAS_RATIO2 }: Props) {
-  const { width, height } = Dimensions.get('window');
-  const pathA = useRef(new Animated.Value(height * CANVAS_RATIO2 * 1.7)).current;
-  const pathB = useRef(new Animated.Value(height * CANVAS_RATIO2 * 1.8)).current;
-  const pathC = useRef(new Animated.Value(height * CANVAS_RATIO2 * 1.7)).current;
-
+export default function CloudyEffect({color, CANVAS_RATIO2, type }: Props) {
+  const CloudStyleCollection = {
+    "threeCurve" : <CloudyThreeCurve color={color} CANVAS_RATIO2={CANVAS_RATIO2}/>,
+    "tenCurve" : <CloudyTenCurve color={color} CANVAS_RATIO2={CANVAS_RATIO2}/>
+  }
   return (
-    <React.Fragment>
-      <Canvas style={StoryStyle.CanvasContainer}>
-        <Path color={'#90ebfe'} path={'M ' + '0 0' + ' Q ' + width / 3.5 + ' ' + (height * CANVAS_RATIO2 * 1.7) + ' ' + width / 2 + ' ' + '0' + ' Z'}></Path>
-      </Canvas>
-      <Canvas style={StoryStyle.CanvasContainer}>
-        <Path color={'#90ebfe'} path={'M ' + width / 3.5 + ' 0' + ' Q ' + width / 2 + ' ' + (height * CANVAS_RATIO2 * 1.8) + ' ' + width / 1.25 + ' ' + '0' + ' Z'}></Path>
-      </Canvas>
-      <Canvas style={StoryStyle.CanvasContainer}>
-        <Path color={'#90ebfe'} path={'M ' + width / 2 + ' 0' + ' Q ' + width / 1.25 + ' ' + (height * CANVAS_RATIO2 * 1.7) + ' ' + width + ' ' + '0' + ' Z'}></Path>
-      </Canvas>
-    </React.Fragment>
+    CloudStyleCollection[type]
   )
 }

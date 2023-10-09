@@ -11,6 +11,7 @@ export type RootStackParamList= {
   AudioUpload: undefined;
   TextUpload: undifined;
   IconStory:undefined;
+  StoryList:undefined;
 }
 export type StackNavProps = {
   navigation: NativeStackNavigationProp<RootStackParamList>;

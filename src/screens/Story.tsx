@@ -24,12 +24,10 @@ type Props = {
 
 function Story({ navigation }: Props) {
   const { width, height } = Dimensions.get('window');
-  const [story, setStory] = useState<StoryInterface[]>([defaultStory]);
   const [chosenIndex, setChosenIndex] = useState(0);
   const [types, setTypes] = useState<any>([]);  
 
   useEffect(() => {
-    getAllStory().then(data => setStory(data));
     getAllTypesOfStory().then(data => setTypes(data))
   }, [])
 
@@ -46,14 +44,14 @@ function Story({ navigation }: Props) {
       <StatusBar hidden={true}></StatusBar>
       <View style={StoryStyle.SubBoundBox}>
         <View style={StoryStyle.text}>
-          <CloudyEffect CANVAS_RATIO2={CANVAS_RATIO2}></CloudyEffect>
+          <CloudyEffect type={'threeCurve'} color="#90ebfe" CANVAS_RATIO2={CANVAS_RATIO2}></CloudyEffect>
           <Text style={StoryStyle.proText}> Choose the kind of story you like </Text>
         </View>
         <View style={StoryStyle.ViewWrap}>
           <View style={ItemType.nonChosenItem}>
             <DirectionButton size={35} color="cyan" dir={false} pressAction={() => handlePress(false)}></DirectionButton>
           </View>
-          <StoryTypeItem type={types[chosenIndex]} chosen={true}></StoryTypeItem>
+          <StoryTypeItem navigation={navigation} type={types[chosenIndex]} chosen={true}></StoryTypeItem>
           <View style={ItemType.nonChosenItem}>
             <DirectionButton size={35} color="cyan" dir={true} pressAction={() => handlePress(true)}></DirectionButton>
           </View>
@@ -66,25 +64,6 @@ function Story({ navigation }: Props) {
         </View>
       </View>
     </SafeAreaView>
-    // <SafeAreaView>
-    //   <View style={{ position: 'absolute' }}>
-    //     <Image style={{ position: 'absolute' }} resizeMode="contain" source={require('../assets/story-background.jpg')}></Image>
-    //   </View>
-    //   <View>
-    //     <Text>Story</Text>
-    //     <View>
-    //       <ScrollView>
-    //         {
-    //           story?.map(s =>
-    //             <StoryItem onPressProp={() => navigation.navigate('IconStory', { id: s.story_id })}
-    //             key={s.story_id}
-    //             name={s.name}
-    //             thumbnail={s.thumbnail} author={""} />)
-    //         }
-    //       </ScrollView>
-    //     </View>
-    //   </View>
-    // </SafeAreaView>
   );
 }
 

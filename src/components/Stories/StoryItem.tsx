@@ -14,25 +14,31 @@ type Props = {
 
 function StoryItem({ name, thumbnail, onPressProp }: Props) {
   return (
-    <TouchableOpacity style={StoryItemStyle.button} onPress={() => onPressProp()}>
-      <View style={StoryItemStyle.overBound}>
-        <View style={StoryItemStyle.storyItem}>
-          <Image style={StoryItemStyle.image} source={{ uri: thumbnail }}></Image>
-          <View style={StoryItemStyle.infoField}>
-            <Text style={StoryItemStyle.text}>
-              {name}
-            </Text>
-            <View style={StoryItemStyle.playButton}>
-              <FontAwesome name='caret-down' style={StoryItemStyle.icon}></FontAwesome>
-            </View>
-          </View>
+    // <View style={StoryItemStyle.overOuterBound}>
+    //   <TouchableOpacity style={StoryItemStyle.button} onPress={() => onPressProp()}>
+    //     <View style={StoryItemStyle.overBound}>
+    //       <View style={StoryItemStyle.storyItem}>
+    //         <Image resizeMode="stretch" style={StoryItemStyle.image} source={{ uri: thumbnail }}></Image>
+    //         <View style={StoryItemStyle.infoField}>
+    //           <Text style={StoryItemStyle.text}>
+    //             {name}
+    //           </Text>
+    //           <View style={StoryItemStyle.playButton}>
+    //             <FontAwesome name='caret-down' style={StoryItemStyle.icon}></FontAwesome>
+    //           </View>
+    //         </View>
+    //       </View>
+    //     </View>
+    //   </TouchableOpacity>
+    // </View>
+    <View style={StoryItemStyle.overOuterBound}>
+      <TouchableOpacity style={StoryItemStyle.button} onPress={() => onPressProp()}>
+        <View style={StoryItemStyle.overBound}>
+          <Image resizeMode="stretch" style={StoryItemStyle.image} source={{ uri: thumbnail }}></Image>
+          <Text style={StoryItemStyle.text}>{name}</Text>
         </View>
-      </View>
-
-      <View style={StoryItemStyle.decor1}></View>
-      <View style={StoryItemStyle.decor2}></View>
-
-    </TouchableOpacity>
+      </TouchableOpacity>
+    </View>
   )
 }
 
