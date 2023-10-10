@@ -12,7 +12,7 @@ export default function StoryTypeItem({ type, chosen, navigation }: any) {
   const handlePress = async () => {
     // await anim(rotateAnim, 720, DURATION);
     // setTimeout(() => rotateAnim.resetAnimation(), DURATION)
-    navigation.navigate('StoryList');
+    navigation.navigate('StoryList' ,{ type: type.name });
   }
 
   //for rotaion, must change number to string 
@@ -21,7 +21,6 @@ export default function StoryTypeItem({ type, chosen, navigation }: any) {
     outputRange: ["0deg", "360deg"]
   });
 
-  console.log(type);
   return (
     <View style={ItemType.ItemStyleBoundCover}>
       <View style={ItemType.ItemStyleBound}>

@@ -13,6 +13,15 @@ export const StoryStyle = StyleSheet.create({
     textShadowOffset: { width: -1, height: 1 }, 
     textShadowRadius: 10 
   },
+  backButton:{
+    position: 'absolute',
+    top: 0,
+    borderWidth:2,
+    borderColor: 'white',
+    borderRadius: 100,
+    padding: 15
+
+  },
   ViewWrap: {
     width:'100%',
     height: '60%',

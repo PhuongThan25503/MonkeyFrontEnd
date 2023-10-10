@@ -4,11 +4,22 @@ const {width, height} = Dimensions.get('window')
 
 export const StoryItemStyle = StyleSheet.create({
   overOuterBound:{
-    width: width * 0.21,
+    width: width * 0.20,
     height: height * 0.5,
     borderColor: '#90ebfe',
     borderWidth: 1,
     borderRadius: 10, 
+    overflow: 'hidden',
+    margin: width * 0.012,
+    backgroundColor: 'white',
+  },
+  overOuterLayer1:{
+    width: width * 0.19,
+    height: height * 0.5,
+    borderColor: '#90ebfe',
+    borderWidth: 1,
+    borderRadius: 10, 
+    overflow: 'hidden'
   },
   text:{
     color: '#90ebfe',
@@ -26,7 +37,7 @@ export const StoryItemStyle = StyleSheet.create({
   image:{
     width: '100%',
     height:'100%',
-    borderRadius: 15
+    borderRadius: 10, 
   },
   playButton:{
     width:width*0.15,
@@ -46,5 +57,25 @@ export const StoryItemStyle = StyleSheet.create({
   infoField:{
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  bookMarkIcon:{
+    position: 'absolute',
+    left: 10,
+    top: 0,
+    transform: [{scaleY: 3}]
+  },
+  bookMarkWrap:{
+    width: 30,
+    position: 'absolute',
+    left: 10,
+    top: -10,
+  },
+  bookMarkText:{
+    color: 'white',
+    fontSize: 20,
+    fontWeight: 'bold',
+    left: 9,
+    top: 5,
+    textAlign:'center'
   }
 });

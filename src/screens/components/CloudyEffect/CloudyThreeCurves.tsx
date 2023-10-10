@@ -9,9 +9,9 @@ type Props = {
   CANVAS_RATIO2: number
   color: string
 }
-export default function CloudyThreeCurve({color, CANVAS_RATIO2 }: Props) {
+export default function CloudyThreeCurve({ color, CANVAS_RATIO2 }: Props) {
   const { width, height } = Dimensions.get('window');
-
+  console.log('M ' + width / 3.5 + ' 0' + ' Q ' + width / 3.5 + ' ' + width / 3.5 + ' ' + width / 3.5 + ' ' + '0' + ' Z');
   return (
     <React.Fragment>
       <Canvas style={StoryStyle.CanvasContainer}>

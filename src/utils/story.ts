@@ -149,3 +149,14 @@ export function replaceWord(sentence: string, words: string[], replacedBy: strin
   const pattern = new RegExp(words.join('|'), 'g');
   return sentence.replace(pattern, replacedBy);
 }
+
+export async function getStoryBasicInfoById(id: number) {
+  try {
+    let apiUrl = IP + '/api/getStoryById/' + id;
+    let response = await axios.get(apiUrl);
+    console.log(response.data);
+    return response.data;
+  } catch (error) {
+    console.log(error);
+  }
+}

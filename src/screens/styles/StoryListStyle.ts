@@ -1,5 +1,5 @@
 import { Dimensions, StyleSheet } from "react-native";
-const {width} = Dimensions.get('window')
+const {width, height} = Dimensions.get('window')
 export const StoryListStyle = StyleSheet.create({
   text: {
     height: '25%',
@@ -16,7 +16,6 @@ export const StoryListStyle = StyleSheet.create({
   },
   ViewWrap: {
     flex:1,
-    borderWidth: 10,
     flexDirection: 'row',
     alignItems: 'center',
     alignContent: 'space-around',
@@ -44,17 +43,26 @@ export const StoryListStyle = StyleSheet.create({
     height: '100%',
   }, 
   ViewBound:{
-    width: width,
+    width: width*0.9,
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: width*0.02,
-    backgroundColor: 'white'
+    paddingTop: height * 0.25,
   },
   ScrollViewBound:{
     flex:1,
     flexDirection: 'row',
-    paddingLeft: width * 0.035,
-    paddingTop: 30,
-    backgroundColor: 'white'
+    alignContent:'center',
+    backgroundColor: 'white',
+  },
+  subScrollView:{
+    alignContent: 'center',
+    width: width,
+    alignItems: 'center'
+  },
+  TopDecor:{
+    height: '25%',
+    width: '100%',
+    position: 'absolute',
+    top: 0
   }
 });

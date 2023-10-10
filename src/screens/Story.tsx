@@ -13,6 +13,7 @@ import { ItemType } from "./components/StoryTypeItem/Style";
 import { Canvas, Path } from "@shopify/react-native-skia";
 import DirectionButton from "./components/DirectionButton";
 import CloudyEffect from "./components/CloudyEffect";
+import StoryHeader from "./components/StoryHeader";
 
 
 const CANVAS_RATIO = 0.15;
@@ -25,7 +26,7 @@ type Props = {
 function Story({ navigation }: Props) {
   const { width, height } = Dimensions.get('window');
   const [chosenIndex, setChosenIndex] = useState(0);
-  const [types, setTypes] = useState<any>([]);  
+  const [types, setTypes] = useState<any>([]);
 
   useEffect(() => {
     getAllTypesOfStory().then(data => setTypes(data))
@@ -38,14 +39,13 @@ function Story({ navigation }: Props) {
   const handlePress = (dir: boolean) => {
     if (canMove(chosenIndex, dir)) setChosenIndex(prew => prew - (dir ? -1 : 1))
   }
-  
+
   return (
     <SafeAreaView style={StoryStyle.BoundBox}>
       <StatusBar hidden={true}></StatusBar>
       <View style={StoryStyle.SubBoundBox}>
         <View style={StoryStyle.text}>
-          <CloudyEffect type={'threeCurve'} color="#90ebfe" CANVAS_RATIO2={CANVAS_RATIO2}></CloudyEffect>
-          <Text style={StoryStyle.proText}> Choose the kind of story you like </Text>
+          <StoryHeader color="#90ebfe" navigation={navigation} title={'Choose the kind you story you like'} headerRatio={0.25}></StoryHeader>
         </View>
         <View style={StoryStyle.ViewWrap}>
           <View style={ItemType.nonChosenItem}>
