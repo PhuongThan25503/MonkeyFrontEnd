@@ -1,8 +1,8 @@
-import { IP } from "../config";
+import { ASYNC_KEY_PREFIX, IP } from "../config";
 import axios from "axios";
 import { PageInterface, StoryInterface, touchableMediaData } from "../types";
 import RNFS from 'react-native-fs';
-import { getAsyncData, saveAsyncData } from "./asyncStorage";
+import { getAsyncData, isKeyExist, saveAsyncData } from "./asyncStorage";
 
 type touchableData = {
   path: string,
@@ -12,7 +12,6 @@ export const getAllStory = async () => {
   try {
     let apiUrl = IP + '/api/getAllStory';
     let response = await axios.get(apiUrl);
-    console.log('get all story data');
     return response.data;
   } catch (error) {
     console.log(error);
@@ -28,37 +27,68 @@ export const getAllTypesOfStory = async () => {
     console.log(error)
   }
 }
+
 export const getPagesByStoryId = async (id: number) => {
   try {
     let apiUrl = IP + '/api/getPagesByStoryId/' + id;
     let response = await axios.get(apiUrl);
-    saveImages(response.data.page, id);
+    const isExist = await isKeyExist(ASYNC_KEY_PREFIX + id);
+    //if(!isExist) await saveMediaToAsyncStorage(response.data.page, id);
+    await saveMediaToAsyncStorage(response.data.page, 32);
     return response.data;
   } catch (error) {
     console.log(error);
   }
 }
 
-export const saveImages = async (pages: any, id: number) => {
+export const saveMediaToAsyncStorage = async (pages: any, id: number) => {
   let story: any[] = [];
   await Promise.all(pages.map(async (p: any, index: number) => {
-    const data = await downloadImage(p.background, "story", id, index + '.png');
+    //thumbnail
+    let thumbnailData = await downloadMedia(p.background, "story", id, "images", index + '.png');
+    let mainAudios:any[] = [];
+
+    //download audio
+    await Promise.all(p.text_config.map(async (pt: any, idx: number) => {
+      mainAudios.push({
+        text_id: pt.text_id,
+        position: pt.position,
+        audio: await downloadMedia(pt.audio.audio, "story", id, "mainAudios", (index + '' + idx) + '.mp3'),
+        syncData: JSON.parse(pt.audio.sync_data)
+      });
+    }));
+
+    mainAudios.sort((a, b) => a.position - b.position);
+
+    //dowload touchable audio
+
+
+    //set touchable
     story.push({
       page: index,
-      image: data
+      image: thumbnailData,
+      text: p.text_config.map((pt: any) => ({
+        text_id: pt.text_id,
+        audio: mainAudios,
+        syncData: JSON.parse(pt.audio.sync_data)
+      })),
+      touchable: p.touch_.map((pt:any) =>({
+        text: pt.text.text,
+        audio: pt.text.audio.audio,
+      }))
     });
   }));
   story.sort((a, b) => a.page - b.page);
-  saveAsyncData('story', story);
+  await saveAsyncData(ASYNC_KEY_PREFIX + id, story);
 };
 
 
-const downloadImage = async (url: string, dir: string, id: number, name: string) => {
+export const downloadMedia = async (url: string, dir: string, id: number, type: string, name: string) => {
   try {
     const response = await fetch(url);
     const fileName = `${name}`;
-    const path = `${RNFS.DocumentDirectoryPath}/${dir}/${id}/${fileName}`;
-    await RNFS.mkdir(`${RNFS.DocumentDirectoryPath}/${dir}/${id}`);
+    const path = `${RNFS.DocumentDirectoryPath}/${dir}/${id}/${type}/${fileName}`;
+    await RNFS.mkdir(`${RNFS.DocumentDirectoryPath}/${dir}/${id}/${type}`);
     const blob = await response.blob();
     const reader = new FileReader();
     reader.readAsDataURL(blob);
@@ -76,7 +106,6 @@ export const getPageDetailById = async (id: number) => {
   try {
     let apiUrl = IP + '/api/getPageById/' + id;
     let response = await axios.get(apiUrl);
-    console.log(response.data);
     return response.data;
   } catch (error) {
     console.log(error);
@@ -127,7 +156,6 @@ export const normalizeTextWithoutSpace = (str: string) => {
   return str;
 }
 
-
 /** change raw data to number array and string path **/
 export const verticlesToPath = (data: string[], height: number, scale: number, xFix: number): touchableData => {
   height = Math.round(height / scale);
@@ -144,7 +172,6 @@ export const verticlesToPath = (data: string[], height: number, scale: number, x
   return { data: newData, path: output + ' Z' };
 }
 
-
 export function replaceWord(sentence: string, words: string[], replacedBy: string) {
   const pattern = new RegExp(words.join('|'), 'g');
   return sentence.replace(pattern, replacedBy);
@@ -154,7 +181,6 @@ export async function getStoryBasicInfoById(id: number) {
   try {
     let apiUrl = IP + '/api/getStoryById/' + id;
     let response = await axios.get(apiUrl);
-    console.log(response.data);
     return response.data;
   } catch (error) {
     console.log(error);

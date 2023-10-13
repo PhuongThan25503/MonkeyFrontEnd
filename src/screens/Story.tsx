@@ -14,6 +14,7 @@ import { Canvas, Path } from "@shopify/react-native-skia";
 import DirectionButton from "./components/DirectionButton";
 import CloudyEffect from "./components/CloudyEffect";
 import StoryHeader from "./components/StoryHeader";
+import { MAINCOLOR } from "../config";
 
 
 const CANVAS_RATIO = 0.15;
@@ -58,7 +59,7 @@ function Story({ navigation }: Props) {
         </View>
         <View style={StoryStyle.IndicatorContainer}>
           <Canvas style={StoryStyle.CanvasContainer}>
-            <Path color={'#90ebfe'} path={'M ' + '0 ' + height * CANVAS_RATIO + ' Q ' + width / 2 + ' ' + (-height * CANVAS_RATIO) + ' ' + width + ' ' + height * CANVAS_RATIO + ' Z'}></Path>
+            <Path color={MAINCOLOR} path={'M ' + '0 ' + height * CANVAS_RATIO + ' Q ' + width / 2 + ' ' + (-height * CANVAS_RATIO) + ' ' + width + ' ' + height * CANVAS_RATIO + ' Z'}></Path>
           </Canvas>
           <Indicator size={15} color="white" numberOfItem={types.length} currentItem={chosenIndex} ></Indicator>
         </View>

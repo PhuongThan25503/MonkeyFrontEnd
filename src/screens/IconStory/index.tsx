@@ -4,16 +4,18 @@ import { ActivityIndicator, Dimensions, StatusBar } from "react-native";
 import { Image, useImage } from '@shopify/react-native-skia';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { getPagesByStoryId} from '../../utils/story';
+import { getPagesByStoryId } from '../../utils/story';
 import { asyncStoryData, mainText } from '../../types';
 import PageTextLayer from './PageTextLayer';
 import CanvasLayer from './CanvasLayer';
-import { SCALE } from '../../config';
+import { ASYNC_KEY_PREFIX, SCALE } from '../../config';
 import SyncTextLayer from './SyncTextLayer';
 import { useIsLoadingStore } from './globalStates/index';
 import { getAsyncData } from '../../utils/asyncStorage';
 import { IconData } from '../../data/iconData';
 import { IconizeSyncData } from './utils';
+import { getStaticStory } from '../../data/dataPreparation/staticStory';
+import LoadingScene from '../LoadingScene';
 
 function IconStory({ route }: any) {
 
@@ -34,11 +36,19 @@ function IconStory({ route }: any) {
 
   // /** : initialize page **/
   useEffect(() => {
-    getPagesByStoryId(route.params.id)
+    getStaticStory(route.params.id)
       .then(data => {
         setPages(data.page);
       })
   }, [])
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await getAsyncData(ASYNC_KEY_PREFIX + route.params.id);
+      setAsyncData(JSON.parse(data));
+    };
+    fetchData();
+  }, [pages])
 
   /** after go to new page / go to story the first time , initialize neccessary data **/
   useEffect(() => {
@@ -48,6 +58,7 @@ function IconStory({ route }: any) {
     if (!pages[currentPageNum]) {
       return;
     }
+
     let currentPageText = pages[currentPageNum]?.text_config;
     //set data for main text
     let tempTextData: mainText[] = [];
@@ -69,7 +80,6 @@ function IconStory({ route }: any) {
     }
 
     setMainText(tempTextData);
-    getAsyncData('story').then(data => setAsyncData(JSON.parse(data)))
   }, [pages, currentPageNum])
 
   const setPageNum = (status: number) => {
@@ -87,10 +97,15 @@ function IconStory({ route }: any) {
 
   SyncTextLayer({ mainText, setGlobalCurrentMainText });
 
+  if (isLoading) {
+    return (
+      <LoadingScene isLoading={isLoading}></LoadingScene>
+    )
+  }
+  
   return (
     <SafeAreaView style={{ width: deviceOrientations.width, height: deviceOrientations.height }}>
       <StatusBar hidden={true}></StatusBar>
-      {isLoading && <ActivityIndicator />}
       <PageTextLayer
         deviceWidth={deviceOrientations.width}
         mainText={mainText}

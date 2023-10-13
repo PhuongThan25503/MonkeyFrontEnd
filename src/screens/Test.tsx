@@ -7,10 +7,11 @@ import Indicator from "./components/Indicator/Indicator";
 import Octicons from "react-native-vector-icons/Octicons"
 import { Canvas, Path } from "@shopify/react-native-skia";
 import DirectionButton from "./components/DirectionButton";
+import { isKeyExist } from "../utils/asyncStorage";
 
 const { width, height } = Dimensions.get('window');
 export default function Test() {
-  console.log('M ' + '0 ' + height + ' Q ' + width / 2 + ' ' + (height - 200) + ' ' + width / 2 + ' ' + height + ' L ' + width + ' ' + height+' Z');
+  isKeyExist("story").then(data => console.log(data)) ;
   return (
     <View></View>
   );

@@ -13,6 +13,7 @@ import { Canvas, Path } from "@shopify/react-native-skia";
 import StoryChosenItem from "./components/StoryChosenItem";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import StoryHeader from "./components/StoryHeader";
+import { MAINCOLOR } from "../config";
 
 const CANVAS_RATIO = 0.15;
 
@@ -28,7 +29,6 @@ function StoryDetail({ navigation, route }: Props) {
   useEffect(() => {
     getStoryBasicInfoById(route.params.id).then(data => setStory(data))
   }, [])
-
 
   return (
     <SafeAreaView style={StoryStyle.BoundBox}>
@@ -46,7 +46,7 @@ function StoryDetail({ navigation, route }: Props) {
         </View>
         <View style={StoryStyle.IndicatorContainer}>
           <Canvas style={StoryStyle.CanvasContainer}>
-            <Path color={'#90ebfe'} path={'M ' + '0 ' + height * CANVAS_RATIO + ' Q ' + width / 2 + ' ' + (-height * CANVAS_RATIO) + ' ' + width + ' ' + height * CANVAS_RATIO + ' Z'}></Path>
+            <Path color={MAINCOLOR} path={'M ' + '0 ' + height * CANVAS_RATIO + ' Q ' + width / 2 + ' ' + (-height * CANVAS_RATIO) + ' ' + width + ' ' + height * CANVAS_RATIO + ' Z'}></Path>
           </Canvas>
           <TouchableOpacity onPress={() => { navigation.navigate('Story') }}>
             <Entypo name="home" color={'white'} size={35}></Entypo>

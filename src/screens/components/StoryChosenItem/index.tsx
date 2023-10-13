@@ -10,7 +10,7 @@ export default function StoryChosenItem({ story, navigation }: any) {
   setTimeout(() => rotateAnim.resetAnimation(), DURATION)
 
   const handlePress = async () => {
-    navigation.navigate('IconStory', { id: story.story_id });
+    navigation.navigate('StaticStory', { id: story.story_id });
   }
   console.log(story);
   return (

@@ -58,7 +58,7 @@ export const easeInOutAnim = (position: Animated.Value, to: number, time: number
   // Create a sequence of four animations
   const sequence = Animated.sequence([
     Animated.timing(position, {
-      toValue: dir? to : -to,
+      toValue: dir ? to : -to,
       duration: time * 0.5,
       useNativeDriver: true,
       easing: Easing.ease,
@@ -72,5 +72,35 @@ export const easeInOutAnim = (position: Animated.Value, to: number, time: number
   ]);
   // Loop the sequence indefinitely
   Animated.loop(sequence).start();
+}
+
+export const LoadingAnim = (position: Animated.Value,from:number, to: number, time: number) => {
+  // Create a sequence of four animations
+  Animated.sequence([
+    Animated.timing(position, {
+      toValue: from * 0.85,
+      duration: time/4,
+      useNativeDriver: true,
+      easing: Easing.ease,
+    }),
+    Animated.timing(position, {
+      toValue: from * 0.75,
+      duration: time/4,
+      useNativeDriver: true,
+      easing: Easing.ease,
+    }),
+    Animated.timing(position, {
+      toValue: from * 0.35,
+      duration: time/4,
+      useNativeDriver: true,
+      easing: Easing.ease,
+    }),
+    Animated.timing(position, {
+      toValue: to,
+      duration: time/4,
+      useNativeDriver: true,
+      easing: Easing.ease,
+    })
+  ]).start();
 }
 

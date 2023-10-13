@@ -45,7 +45,6 @@ export default function TouchablesLayer({ mainText, pageTouches, gestureHandler,
         try {
           SoundPlayer.playUrl(currentEffect.audio); //play sound 
           let _onLoadingSubscription = SoundPlayer.addEventListener('FinishedLoadingURL', (data) => {
-            console.log(target);
             setPopUpText(touchableData[i]);// set pop up text
             mainText.map((mt, k) => {
               //highlight the word if the word chosen match the word in top-text

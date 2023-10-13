@@ -8,6 +8,7 @@ export const StoryStyle = StyleSheet.create({
   proText:{
     textAlign:'center', 
     fontSize: 40, 
+    fontWeight: 'bold',
     color: 'white', 
     textShadowColor: 'rgba(144, 235, 255, 83)', 
     textShadowOffset: { width: -1, height: 1 }, 

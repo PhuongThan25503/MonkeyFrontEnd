@@ -1,12 +1,12 @@
-import { Animated, Image, SafeAreaView, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Animated, SafeAreaView, ScrollView, StyleSheet, View } from "react-native";
 import StoryItem from "../components/Stories/StoryItem";
 import { useEffect, useRef, useState } from "react";
 import { defaultStory, getAllStory } from "../utils/story";
 import { StoryInterface } from "../types";
 import { StoryListStyle } from "./styles/StoryListStyle";
-import CloudyEffect from "./components/CloudyEffect";
 import { anim } from "../utils/animation";
 import StoryHeader from "./components/StoryHeader";
+import { MAINCOLOR } from "../config";
 
 export default function StoryList({ route, navigation }: any) {
   const type = route.params.type;
@@ -41,7 +41,7 @@ export default function StoryList({ route, navigation }: any) {
         </View>
       </ScrollView>
       <Animated.View style={StyleSheet.compose(StoryListStyle.TopDecor, { transform: [{ translateY: cloudMove }] })}>
-        <StoryHeader color={"#90ebfe"} navigation={navigation} title={type} headerRatio={0.25}></StoryHeader>
+        <StoryHeader color={MAINCOLOR} navigation={navigation} title={type} headerRatio={0.25}></StoryHeader>
       </Animated.View>
     </SafeAreaView>
   )
