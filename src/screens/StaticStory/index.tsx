@@ -29,15 +29,17 @@ function StaticStory({ route }: any) {
   const [isLoading, setIsLoading] = useState(true);
 
   const isLoaded = useIsDownloaded((state :any)=> state.isDownloaded);
-  const setIsLoaded = useIsDownloaded((state :any) => state.setIsDownloaded)
+  const setIsLoaded = useIsDownloaded((state :any) => state.setIsDownloaded);
 
   // /** : initialize page **/
   useEffect(() => {
     setIsLoading(true);
-    setIsLoaded(false);
     getStaticStory(route.params.id).then(() => {
       setIsLoading(false);
     })
+    return () => {
+      setIsLoaded(false);
+    };
   }, [])
 
   useEffect(() => {

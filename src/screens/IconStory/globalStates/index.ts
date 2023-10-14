@@ -15,4 +15,3 @@ export const useAnimatedHighlight = create((set) => ({
   effectOn: false,
   setAnimatedOn: (status: boolean) => set(() => ({ effectOn: status})),
 }));
-

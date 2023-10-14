@@ -32,7 +32,7 @@ export default function StoryList({ route, navigation }: any) {
           <View style={StoryListStyle.ViewBound}>
             {
               story?.map(s =>
-                <StoryItem onPressProp={() => navigation.navigate('StoryDetail', { id: s.story_id })}
+                <StoryItem onPressProp={() => navigation.navigate('StoryDetail', { id: s.story_id, type: type})}
                   key={s.story_id}
                   name={s.name}
                   thumbnail={s.thumbnail} author={""} />)

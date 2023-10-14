@@ -13,10 +13,11 @@ import History from "../screens/History";
 import AudioManagement from "../screens/Audio";
 import AudioUploadScreen from "../screens/Audio/AudioUpload";
 import TextUploadScreen from "../screens/Audio/TextUpload";
-import IconStory from "../screens/IconStory";
+
 import StoryList from "../screens/StoryList";
 import StoryDetail from "../screens/StoryDetail";
 import StaticStory from "../screens/StaticStory";
+import IconStory from "../screens/IconStory";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 

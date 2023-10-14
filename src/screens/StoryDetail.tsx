@@ -23,6 +23,7 @@ type Props = {
 }
 
 function StoryDetail({ navigation, route }: Props) {
+  const type = route.params.type;
   const { width, height } = Dimensions.get('window');
   const [story, setStory] = useState<any>([]);
 
@@ -40,7 +41,7 @@ function StoryDetail({ navigation, route }: Props) {
         <View style={StoryStyle.ViewWrap}>
           <View style={ItemType.nonChosenItem}>
           </View>
-          <StoryChosenItem story={story} navigation={navigation}></StoryChosenItem>
+          <StoryChosenItem type={type} story={story} navigation={navigation}></StoryChosenItem>
           <View style={ItemType.nonChosenItem}>
           </View>
         </View>

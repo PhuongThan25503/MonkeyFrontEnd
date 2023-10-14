@@ -4,7 +4,6 @@ import SoundPlayer from "react-native-sound-player";
 import { useTextEffect } from "./globalStates/index";
 
 export default function SyncTextLayer({ mainText, setGlobalCurrentMainText }: any) {
-
   //ready to play sound ?
   const [isReadyToPlaySound, setIsReadyToPlaySound] = useState<boolean>(false);
 
@@ -14,6 +13,29 @@ export default function SyncTextLayer({ mainText, setGlobalCurrentMainText }: an
   const setTextEffect = useTextEffect((state: any) => state.setEffectIndex);
 
   const timerId = useRef<any>();
+
+  const _onLoadingSubscription = SoundPlayer.addEventListener('FinishedLoadingURL', (data) => {
+    _onLoadingSubscription.remove();
+    try {
+      if (mainText && mainText?.length > 0) {
+        playEffectText(mainText[currentMainText]);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  });
+
+  const _onFinishSubscription = SoundPlayer.addEventListener('FinishedPlaying', (data) => {
+    try {
+      if (currentMainText < mainText?.length - 1) {
+        setCurrentMainText(currentMainText + 1);
+        _onLoadingSubscription.remove();
+        _onFinishSubscription.remove();
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  });
 
   /** after preparing main text ,set the current main text **/
   useEffect(() => {
@@ -28,13 +50,15 @@ export default function SyncTextLayer({ mainText, setGlobalCurrentMainText }: an
   /** if current main text has change, play the sound **/
   useEffect(() => {
     setTextEffect(-1);
-    setGlobalCurrentMainText(currentMainText);
-    setIsReadyToPlaySound(true);
+    if (currentMainText < mainText?.length) {
+      setIsReadyToPlaySound(true);
+    }
   }, [currentMainText])
 
   /** play the sound **/
   useEffect(() => {
     if (isReadyToPlaySound) {
+      setGlobalCurrentMainText(currentMainText);
       playMainAudio();
       setIsReadyToPlaySound(false);
     }
@@ -78,27 +102,9 @@ export default function SyncTextLayer({ mainText, setGlobalCurrentMainText }: an
   const playMainAudio = () => {
     try {
       SoundPlayer.playUrl(mainText[currentMainText].audio);
-
-      //when finish loading, play audio
-      let _onLoadingSubscription = SoundPlayer.addEventListener('FinishedLoadingURL', (data) => {
-        _onLoadingSubscription.remove();
-        playEffectText(mainText[currentMainText]);
-      });
-
-      //when finish playing audio , remove listener to avoid error
-      let _onFinishSubscription = SoundPlayer.addEventListener('FinishedPlaying', (data) => {
-        _onLoadingSubscription.remove(); //remove event listener 
-        _onFinishSubscription.remove(); //remove event listener 
-
-        if (currentMainText < mainText.length - 1) {
-          setCurrentMainText((prew) => prew + 1);
-        }
-
-      });
     } catch (error) {
       console.log(error);
     }
   }
-
-  return;
+  return (<></>)
 }

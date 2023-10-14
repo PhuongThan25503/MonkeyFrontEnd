@@ -1,20 +1,25 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { Animated, View, Text as RNText, StyleSheet } from "react-native";
 import { jumpAnim } from "../../utils/animation";
-import IconElement from "./components/IconElement";
-import { normalizeTextWithoutSpace } from "../../utils/story";
 import { useAnimatedHighlight, useTextEffect } from "./globalStates/index";
 import { wordStyle } from "./style/PageTextStyle";
+import { normalizeTextWithoutSpace } from "../../utils/story";
+import IconElement from "./components/IconElement";
 
-export default function PageTextLayer({ iconData, deviceWidth, mainText, currentMainText }: any) {
+export default function PageTextLayer({iconData, deviceWidth, mainText, currentMainText }: any) {
   const jumpAnimValue = useRef(new Animated.Value(-10 / 1.5)).current; //animation for highlighting text 
   jumpAnim(jumpAnimValue, -10, 300);
-  const iconWords = iconData?.map((i: any) => normalizeTextWithoutSpace(i.word));
   const textEffectIndex = useTextEffect((state: any) => state.effectIndex);
-  const syncDuration = mainText[currentMainText]?.syncData.map((m: any) => m.e - m.s); //sync duration for animation
   const effectOn = useAnimatedHighlight((state: any) => state.effectOn)
+  var syncDuration: any[] = [];
+  const iconWords = iconData?.map((i: any) => normalizeTextWithoutSpace(i.word));
+
+  if(mainText){
+    syncDuration = mainText[currentMainText]?.syncData.map((m: any) => m.e - m.s); //sync duration for animation
+  }
+  
   return (
-    <View style={{ position: 'absolute', marginTop: 25, width: deviceWidth, zIndex: 2, alignItems: 'center' }}>
+    mainText && mainText.length >0 && <View style={{ position: 'absolute', marginTop: 25, width: deviceWidth, zIndex: 2, alignItems: 'center' }}>
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', maxWidth: '60%' }}>
         {
           mainText[currentMainText]?.text.map((mt: string, index: number) =>

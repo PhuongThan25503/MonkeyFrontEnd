@@ -12,7 +12,6 @@ export default function LoadingScene({ isLoading }: Props) {
   const width = Dimensions.get('window').width;
   const runProgressWidth = useRef(new Animated.Value(-width * 0.85)).current;
   const fade = useRef(new Animated.Value(1)).current;
-  const percentage = useRef(0);
   const setIsLoaded = useIsDownloaded((state: any) => state.setIsDownloaded)
   const [switcher, setSwitcher] = useState(false);
 
@@ -22,13 +21,9 @@ export default function LoadingScene({ isLoading }: Props) {
     anim(runProgressWidth, 0, 1000);
   }
 
-
-
   runProgressWidth.addListener(({ value }) => {
-    if (Math.round(value * 100) % 23 == 0) {
-      if (Math.round(((width + value) / width) * 100) == 100) {
-        setSwitcher(true);
-      }
+    if (Math.round(((width + value) / width) * 100) == 100) {
+      setSwitcher(true);
     }
   });
 

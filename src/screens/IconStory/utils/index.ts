@@ -165,7 +165,7 @@ export const IconizeSyncData = (tempTextData: any, iconList: string[][]) => {
       }
     })
   })
-  return tempTextData[0];
+  return tempTextData;
 }
 
 /** play the main audio of the page **/
