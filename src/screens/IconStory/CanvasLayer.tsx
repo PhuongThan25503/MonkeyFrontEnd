@@ -5,7 +5,7 @@ import { Gesture, GestureDetector, GestureHandlerRootView } from "react-native-g
 import PageCurlLayer from "./PageCurlLayer";
 import TouchablesLayer from "./TouchablesLayer";
 
-export default function CanvasLayer({ deviceWidth, deviceHeight, setPageNum, children, mainText, pageTouches, scale }: any) {
+export default function CanvasLayer({ deviceWidth, deviceHeight, setPageNum, children, mainText, pageTouches }: any) {
   const [customGesture, setGesture] = useState<any[]>([]);
 
   const getGestureHandler = (gestureFromChild: any) => {
@@ -31,8 +31,7 @@ export default function CanvasLayer({ deviceWidth, deviceHeight, setPageNum, chi
             pageTouches={pageTouches}
             mainText={mainText}
             gestureHandler={getGestureHandler}
-            deviceHeight={deviceHeight}
-            scale={scale} />
+            deviceHeight={deviceHeight}/>
         </Canvas>
       </GestureDetector>
     </GestureHandlerRootView>

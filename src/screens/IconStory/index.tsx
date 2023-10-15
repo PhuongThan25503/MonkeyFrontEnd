@@ -98,8 +98,7 @@ function IconStory({ route }: any) {
         setPageNum={setPageNum}
         deviceHeight={deviceOrientations.height}
         mainText={storyData[currentPageNum]?.text[currentMainText]?.text}
-        pageTouches={storyData[currentPageNum]?.touchable}
-        scale={SCALE}>
+        pageTouches={storyData[currentPageNum]?.touchable}>
         <Image x={0} y={0} fit={'fitHeight'} height={deviceOrientations.height} width={deviceOrientations.width} image={useImage(storyData[currentPageNum]?.image)} />
 
         <Image

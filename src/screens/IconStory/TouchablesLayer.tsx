@@ -1,6 +1,7 @@
+import React from 'react';
 import { useEffect, useState } from 'react';
 
-import { useFont, Text as SKText, vec, Paint } from '@shopify/react-native-skia';
+import { useFont, Text as SKText, vec, Paint, Rect, RoundedRect } from '@shopify/react-native-skia';
 import { Gesture } from "react-native-gesture-handler";
 import SoundPlayer from "react-native-sound-player";
 
@@ -13,16 +14,15 @@ type Props = {
   mainText: string[],
   gestureHandler: any,
   deviceHeight: number,
-  scale: number,
   pageTouches: any,
 }
 
-export default function TouchablesLayer({ mainText, pageTouches, gestureHandler, deviceHeight, scale }: Props) {
+export default function TouchablesLayer({ mainText, pageTouches, gestureHandler, deviceHeight}: Props) {
   //floating text that appear when use press on screen's item
   const [popUpText, setPopUpText] = useState<touchableMediaData>({
     audio: '',
     text: '',
-    config: { x: 0, y: 0, rotate: 0 }
+    config: { x: 0, y: 0, rotate: 0 , width:0}
   });
 
   const pointInPolygon = require('point-in-polygon');
@@ -39,10 +39,9 @@ export default function TouchablesLayer({ mainText, pageTouches, gestureHandler,
     })
 
   useEffect(() => {
-    console.log(target)
     pageTouches?.map((v: any, i: number) => {
       //if user touch to a touchable area
-      if (v.verticles?.length >0 ? pointInPolygon(target, v.verticles) : false) {
+      if (v.verticles?.length > 0 ? pointInPolygon(target, v.verticles) : false) {
         let currentEffect = pageTouches[i];
         setPopUpText(currentEffect);// set pop up text
         try {
@@ -57,7 +56,7 @@ export default function TouchablesLayer({ mainText, pageTouches, gestureHandler,
             })
           });
           let _onFinishSubscription = SoundPlayer.addEventListener('FinishedPlaying', (data) => {
-            setPopUpText({ audio: '', text: '', config: { x: 0, y: 0, rotate: 0 } }); //reset state
+            setPopUpText({ audio: '', text: '', config: { x: 0, y: 0, rotate: 0, width: 0 } }); //reset state
             setTextEffect(-1);
             setAnimatedOn(false); //trigger the animation
             _onLoadingSubscription.remove();
@@ -73,17 +72,28 @@ export default function TouchablesLayer({ mainText, pageTouches, gestureHandler,
   useEffect(() => {
     gestureHandler(onTap); //export gesture
   }, [])
-
   return (
-    <SKText
-      color={'white'}
-      text={popUpText?.text}
-      origin={vec(popUpText.config.x * scale, popUpText.config.y * scale)}
-      font={useFont(require('../../assets/The-fragile-wind.ttf'), deviceHeight * 0.05)}
-      x={popUpText.config.x * scale}
-      y={popUpText.config.y * scale}
-      transform={[{ rotate: popUpText.config.rotate * DEGREE }]} >
-         <Paint color="#b7b7b7" opacity={0.2} style="stroke" strokeWidth={20} />
+    <React.Fragment>
+      <RoundedRect
+        opacity={0.8}
+        r={5}
+        origin={vec(popUpText.config.x * SCALE, popUpText.config.y * SCALE)}
+        transform={[{ rotate: popUpText.config.rotate * DEGREE }]}
+        x={popUpText.config.x * SCALE}
+        y={popUpText.config.y * SCALE - deviceHeight * 0.05}
+        // width={popUpText?.text.length * 15}
+        width={popUpText.config.width * SCALE}
+        height={deviceHeight * 0.05 + 10}
+        color="gray" />
+      <SKText
+        color={'white'}
+        text={" " + popUpText?.text}
+        origin={vec(popUpText.config.x * SCALE, popUpText.config.y * SCALE)}
+        font={useFont(require('../../assets/The-fragile-wind.ttf'), deviceHeight * 0.05)}
+        x={popUpText.config.x * SCALE}
+        y={popUpText.config.y * SCALE}
+        transform={[{ rotate: popUpText.config.rotate * DEGREE }]} >
       </SKText>
+    </React.Fragment>
   )
 }
