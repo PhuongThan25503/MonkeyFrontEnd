@@ -13,7 +13,6 @@ export default function PageTextLayer({iconData, deviceWidth, mainText, currentM
   const effectOn = useAnimatedHighlight((state: any) => state.effectOn)
   var syncDuration: any[] = [];
   const iconWords = iconData?.map((i: any) => normalizeTextWithoutSpace(i.word));
-
   if(mainText){
     syncDuration = mainText[currentMainText]?.syncData.map((m: any) => m.e - m.s); //sync duration for animation
   }
@@ -22,7 +21,7 @@ export default function PageTextLayer({iconData, deviceWidth, mainText, currentM
     mainText && mainText.length >0 && <View style={{ position: 'absolute', marginTop: 25, width: deviceWidth, zIndex: 2, alignItems: 'center' }}>
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', maxWidth: '60%' }}>
         {
-          mainText[currentMainText]?.text.map((mt: string, index: number) =>
+          mainText[currentMainText]?.text.map((mt: string, index: number) => 
           (
             iconWords && iconWords.indexOf(normalizeTextWithoutSpace(mt)) >= 0 ? (
               syncDuration && textEffectIndex == index ?

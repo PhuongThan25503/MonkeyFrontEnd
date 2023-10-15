@@ -27,12 +27,12 @@ export default function CanvasLayer({ deviceWidth, deviceHeight, setPageNum, chi
             pageDirection={pageDirection}
             gestureHandler={getGestureHandler}>
           </PageCurlLayer>
-          {pageTouches && <TouchablesLayer
+          <TouchablesLayer
             pageTouches={pageTouches}
             mainText={mainText}
             gestureHandler={getGestureHandler}
             deviceHeight={deviceHeight}
-            scale={scale} />}
+            scale={scale} />
         </Canvas>
       </GestureDetector>
     </GestureHandlerRootView>

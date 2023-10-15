@@ -1,18 +1,15 @@
-import RNFS from 'react-native-fs';
 import axios from 'axios';
 
 import { ASYNC_KEY_PREFIX, IP, SCALE } from "../../config";
 import { isKeyExist, saveAsyncData } from "../../utils/asyncStorage";
 import { downloadMedia } from '../../utils/story';
 import { Dimensions } from 'react-native';
-import { stringArrayToPolygonArray, verticlesToPurePath } from '../../screens/IconStory/utils';
-import { IconData } from '../iconData';
+import { stringArrayToPolygonArray, stringObjectToArray, verticlesToPurePath } from '../../screens/IconStory/utils';
 import { IconizeSyncData } from '../../screens/IconStory/utils';
-import { Image } from 'react-native-svg';
 
 const TYPE = "Static_story";
 
-export const getStaticStory = async (id: number) => {
+export const getIconStory = async (id: number) => {
   try {
     let apiUrl = IP + '/api/getPagesByStoryId/' + id;
     let response = await axios.get(apiUrl);
@@ -48,8 +45,8 @@ export const saveMediaToAsyncStorage = async (pages: any, id: number) => {
         image_width: size[0],
         image_height: size[1],
         word: pt.text.text,
-        image: await downloadMedia(pt.text.icon, TYPE, id, "icon_images", index + '.png'),
-        sound: audioIcon, 
+        image: await downloadMedia(pt.text.icon, TYPE, id, "icon_images", (index + '_' + idx) + '.png'),
+        sound: audioIcon,
       })
     }));
 
@@ -70,13 +67,23 @@ export const saveMediaToAsyncStorage = async (pages: any, id: number) => {
 
     mainText.sort((a, b) => a.position - b.position);
 
-    //set touchable
+    // detail image: 
+    let detailImage:any;
+    if(p.image) {
+      detailImage= {
+        position: stringObjectToArray(p.image.position, 0),
+        size: stringObjectToArray(p.image.size, 0),
+        image: await downloadMedia(p.image.image, TYPE, id, "detail_images", (index + 'detail_') + '.png'),
+      }
+    } 
+    
     story.push({
       page: index,
       image: thumbnailData,
       text: mainText,
       touchable: touchable,
-      iconList: iconList
+      iconList: iconList,
+      detailImage: detailImage
     });
   }));
   story.sort((a, b) => a.page - b.page);

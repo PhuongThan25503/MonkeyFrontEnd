@@ -17,5 +17,5 @@ export const SCALE = 0.55;
 export const MAINCOLOR = '#90ebfe';
 
 //prefix for async data
-export const ASYNC_KEY_PREFIX = 'sqsaa';
+export const ASYNC_KEY_PREFIX = 'Story';
 

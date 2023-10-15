@@ -31,7 +31,7 @@ export default function IconElement({ durationAnim, Anim, iconData }: any) {
         <Animated.View style={StyleSheet.compose({ width: iconData.image_width, height: iconData.image_height, transform: [{ scale: Anim ? scaleAnimValue : scaleAnimValue2 }] }, IconStyle.IconTag)}>
           <Image
             resizeMode="contain"
-            source={iconData.imageLocal}
+            source={{uri:iconData.image}}
             style={IconStyle.image}
           />
         </Animated.View>

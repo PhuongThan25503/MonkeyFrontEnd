@@ -2,8 +2,8 @@ import { useState } from 'react';
 
 import { mainText, touchableMediaData } from '../../../types';
 import SoundPlayer from 'react-native-sound-player';
-import RNFS from 'react-native-fs';
-import { normalizeText } from '../../../utils/story';
+import { normalizeText, normalizeTextWithoutSpace } from '../../../utils/story';
+import { Icon } from '../types';
 
 /** change raw data to number array  (performance)**/
 export const verticlesToPurePath = (data: string[], height: number, scale: number, xFix: number): number[] => {
@@ -17,6 +17,12 @@ export const verticlesToPurePath = (data: string[], height: number, scale: numbe
     return d; //element of array number
   })
   return newData;
+}
+
+export const stringObjectToArray = (data: string, scale: number): number[] => {
+    let [a, b] = data.split(',');
+    [a, b] = [a.replace(/\D/g, ''), b.replace(/\D/g, '')]; //change '{a,b}' to [a,b]
+    return [Number(a), Number(b)];
 }
 
 /** render touchable into an array **/
@@ -99,60 +105,15 @@ export const playEffectText = (mainText: mainText, wordEffect: boolean[], setWor
   }
 }
 
-const downloadImage = async (url: string, dir: string, id: number, name: string) => {
-  try {
-    const response = await fetch(url);
-    const fileName = `${name}`;
-    const path = `${RNFS.DocumentDirectoryPath}/${dir}/${id}/${fileName}`;
-    await RNFS.mkdir(`${RNFS.DocumentDirectoryPath}/${dir}/${id}`);
-    const blob = await response.blob();
-    const reader = new FileReader();
-    reader.readAsDataURL(blob);
-    reader.onloadend = async () => {
-      const base64data = (reader.result as string).split(',')[1];
-      await RNFS.writeFile(path, base64data, 'base64');
-      console.log('Image saved successfully!');
-    };
-  } catch (error) {
-    console.log(error);
-  }
-};
-
-// export const IconizeSyncData = (tempTextData: any, iconList: string[][]) => {
-//   let indexer = -1; //true index for icon 
-//   tempTextData.map((t: any, index: number) => {
-//     iconList.map(i => {
-//       let streak = true; // in case the icon text has many words, check
-//       let n = 0; // count the word of the icon text
-//       while (streak) {
-//         if (normalizeText(tempTextData[index + n].w) == normalizeText(i[n])) {
-//           indexer = indexer + 1;
-//           if (n > 0) {
-//             tempTextData[index].e = tempTextData[index + n].e;
-//             indexer = indexer - 1;
-//             tempTextData.splice(index + n, 1);
-//           }
-//           if (n == 0) {
-//             tempTextData[index].w = "<icon>" + indexer;
-//           }
-//         } else {
-//           streak = false;
-//         }
-//         n = n + 1;
-//       }
-//     })
-//   })
-//   //console.log(tempTextData)
-//   return tempTextData[0];
-// }
-
-export const IconizeSyncData = (tempTextData: any, iconList: string[][]) => {
+//if change sync data from text to be competible with icon data
+export const IconizeSyncData = (tempTextData: any, iconList: Icon[]) => {
   tempTextData.map((t: any, index: number) => {
     iconList.map(i => {
       let streak = true; // in case the icon text has many words, check
       let n = 0; // count the word of the icon text
+      let iconWord = i.word.split(' '); //icon may contain many words
       while (streak) {
-        if (normalizeText(tempTextData[index + n].w) == normalizeText(i[n])) {
+        if (normalizeTextWithoutSpace(tempTextData[index + n].w) == normalizeTextWithoutSpace(iconWord[n])) {
           if (n > 0) {
             tempTextData[index].e = tempTextData[index + n].e;
             tempTextData[index].w = tempTextData[index].w + ' ' + tempTextData[index + n].w;
@@ -163,7 +124,7 @@ export const IconizeSyncData = (tempTextData: any, iconList: string[][]) => {
         }
         n = n + 1;
       }
-    })
+    }) 
   })
   return tempTextData;
 }

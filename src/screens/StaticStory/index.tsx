@@ -9,7 +9,6 @@ import CanvasLayer from './CanvasLayer';
 import { ASYNC_KEY_PREFIX, SCALE } from '../../config';
 import SyncTextLayer from './SyncTextLayer';
 import { getAsyncData } from '../../utils/asyncStorage';
-import { IconData } from '../../data/iconData';
 import { getStaticStory } from '../../data/dataPreparation/staticStory';
 import LoadingScene from '../LoadingScene';
 import { useIsDownloaded } from '../LoadingScene/store';
@@ -73,8 +72,7 @@ function StaticStory({ route }: any) {
       <PageTextLayer
         deviceWidth={deviceOrientations.width}
         mainText={storyData[currentPageNum]?.text}
-        currentMainText={currentMainText}
-        iconData={IconData[currentPageNum]}>
+        currentMainText={currentMainText}>
       </PageTextLayer>
 
       <SyncTextLayer

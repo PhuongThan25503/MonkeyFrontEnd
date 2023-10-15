@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { Dimensions, StatusBar } from "react-native";
 
 import { Image, useImage } from '@shopify/react-native-skia';
@@ -9,11 +9,12 @@ import CanvasLayer from './CanvasLayer';
 import { ASYNC_KEY_PREFIX, SCALE } from '../../config';
 import SyncTextLayer from './SyncTextLayer';
 import { getAsyncData } from '../../utils/asyncStorage';
-import { IconData } from '../../data/iconData';
 
 import LoadingScene from '../LoadingScene';
 import { useIsDownloaded } from '../LoadingScene/store';
-import { getStaticStory } from '../../data/dataPreparation/iconStory';
+import { getIconStory } from '../../data/dataPreparation/iconStory';
+import { StoryData } from './types';
+import LastPage from '../LastPage';
 
 function IconStory({ route }: any) {
 
@@ -25,17 +26,18 @@ function IconStory({ route }: any) {
   //current main text that appear on the screen (if that screen has many texts)
   const [currentMainText, setCurrentMainText] = useState(0);
 
-  const [storyData, setStoryData] = useState<any[]>([]);
+  const [storyData, setStoryData] = useState<StoryData[]>([]);
 
   const [isLoading, setIsLoading] = useState(true);
 
   const isLoaded = useIsDownloaded((state: any) => state.isDownloaded);
+
   const setIsLoaded = useIsDownloaded((state: any) => state.setIsDownloaded)
 
   // /** : initialize page **/
   useEffect(() => {
     setIsLoading(true);
-    getStaticStory(route.params.id).then(() => {
+    getIconStory(route.params.id).then(() => {
       setIsLoading(false);
     });
     return () => {
@@ -52,15 +54,19 @@ function IconStory({ route }: any) {
       fetchData();
     }
   }, [isLoaded])
-
+  
   const setPageNum = (status: number) => {
     if (status == 1) {
       setCurrentMainText(0);
-      setCurrentPageNum((prew) => prew + 1);
+      setCurrentPageNum((prew) =>prew +1);
     }
     if (status == -1) {
       setCurrentMainText(0);
-      setCurrentPageNum((prew) => prew - 1);
+      setCurrentPageNum((prew) => {
+        if (prew - 1 >= 0) {
+          return (prew - 1)
+        } else return (prew)
+      });
     }
   }
 
@@ -68,14 +74,18 @@ function IconStory({ route }: any) {
     setCurrentMainText(a);
   }
 
-  return (
+  const setCurrentPage = (num: number) => {
+    setCurrentPageNum(num);
+  }
+
+  return (  
     (storyData && <SafeAreaView style={{ width: deviceOrientations.width, height: deviceOrientations.height }}>
       <StatusBar hidden={true}></StatusBar>
-      <PageTextLayer
+      <PageTextLayer 
         deviceWidth={deviceOrientations.width}
         mainText={storyData[currentPageNum]?.text}
         currentMainText={currentMainText}
-        iconData={IconData[currentPageNum]}>
+        iconData={storyData[currentPageNum]?.iconList}>
       </PageTextLayer>
 
       <SyncTextLayer
@@ -83,7 +93,7 @@ function IconStory({ route }: any) {
         setGlobalCurrentMainText={setGlobalCurrentMainText}
       ></SyncTextLayer>
 
-      <CanvasLayer
+       <CanvasLayer
         deviceWidth={deviceOrientations.width}
         setPageNum={setPageNum}
         deviceHeight={deviceOrientations.height}
@@ -91,8 +101,19 @@ function IconStory({ route }: any) {
         pageTouches={storyData[currentPageNum]?.touchable}
         scale={SCALE}>
         <Image x={0} y={0} fit={'fitHeight'} height={deviceOrientations.height} width={deviceOrientations.width} image={useImage(storyData[currentPageNum]?.image)} />
+
+        <Image
+          x={storyData[currentPageNum]?.detailImage?.position[0] * SCALE}
+          y={storyData[currentPageNum]?.detailImage?.position[1] * SCALE} fit={'fitHeight'}
+          width={storyData[currentPageNum]?.detailImage?.size[0] * SCALE}
+          height={storyData[currentPageNum]?.detailImage?.size[1] * SCALE}
+          image={useImage(storyData[currentPageNum]?.detailImage?.image)} />
+
       </CanvasLayer>
       {(!isLoaded || isLoading) ? <LoadingScene isLoading={isLoading} ></LoadingScene> : <></>}
+      {
+        (currentPageNum >= storyData.length && storyData.length > 0) ? <LastPage setCurrentPageNum={setCurrentPage}></LastPage> : <></>
+      }
     </SafeAreaView>)
   );
 }
