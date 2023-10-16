@@ -71,6 +71,7 @@ export type touchableData = {
 }
 
 export type textConfig = {
+  width: number;
   x: number,
   y: number,
   rotate: number,

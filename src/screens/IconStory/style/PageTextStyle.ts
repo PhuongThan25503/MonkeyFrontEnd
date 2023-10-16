@@ -1,5 +1,6 @@
-import { StyleSheet } from "react-native";
+import { Dimensions, StyleSheet } from "react-native";
 
+const {width, height} = Dimensions.get('screen');
 export const wordStyle = StyleSheet.create({
   default: {
     color: 'black',
@@ -15,5 +16,10 @@ export const wordStyle = StyleSheet.create({
     backgroundColor: 'aqua',
     padding: 15,
     borderRadius: 20
+  },
+  image: {
+    width: width,
+    height: height,
+    position:'absolute'
   }
 });

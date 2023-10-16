@@ -104,3 +104,20 @@ export const LoadingAnim = (position: Animated.Value,from:number, to: number, ti
   ]).start();
 }
 
+export const reFadeAnim =  (position: Animated.Value, to: number, time: number) => {
+  // Create a sequence of four animations
+  Animated.sequence([
+    Animated.timing(position, {
+      toValue: 0,
+      duration: 10,
+      useNativeDriver: true,
+      easing: Easing.ease,
+    }),
+    Animated.timing(position, {
+      toValue: to,
+      duration: time,
+      useNativeDriver: true,
+      easing: Easing.ease,
+    }),
+  ]).start();
+}

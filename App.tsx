@@ -14,8 +14,16 @@ import { getAPIToken, refreshToken } from './src/utils/authenticate';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import AppStackNavigatior from './src/navigation/AppStackNavigator';
 import "react-native-gesture-handler";
+import dynamicLinks from '@react-native-firebase/dynamic-links';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
+
+const handleDynamicLink = (link:any) => {
+  // Handle dynamic link inside your own application
+  if (link.url === 'https://monkeyapp.page.link/H3Ed') {
+    console.log('good you did it')
+  }
+};
 
 function App() {
 
@@ -26,7 +34,13 @@ function App() {
     // Set up the interval to call the token refresh function
     const interValid = setInterval(refreshToken, REFRESH_INTERVAL);
 
-    return () => clearInterval(interValid);
+    const unsubscribe = dynamicLinks().onLink(handleDynamicLink);
+    // When the component is unmounted, remove the listener
+
+    return () => {
+      unsubscribe();
+      clearInterval(interValid);
+    }
   }, []);
 
   return (

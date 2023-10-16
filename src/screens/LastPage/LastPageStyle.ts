@@ -4,6 +4,7 @@ const {width, height} = Dimensions.get('screen');
 
 export const LastPageStyle = StyleSheet.create({
   screen:{
+    zIndex:10,
     width: width,
     height: height,
     position: 'absolute',

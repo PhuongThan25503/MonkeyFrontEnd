@@ -26,11 +26,10 @@ export default function StoryChosenItem({ type, story, navigation }: Props) {
     navigation.navigate(typeNav[type], { id: story.story_id });
   }
 
-  console.log(story);
   return (
     <View style={ItemType.ItemStyleBoundCover}>
       <View style={ItemType.ItemStyleBound}>
-        <Image resizeMode="cover" style={ItemType.image} source={{ uri: story.thumbnail }}></Image>
+        {story.thumbnail && <Image resizeMode="cover" style={ItemType.image} source={{ uri: story.thumbnail }}></Image>}
         <TouchableOpacity onPress={() => handlePress()} style={StyleSheet.compose(ItemType.TouchableBound, ItemType.ChosenItem)}>
           <View style={ItemType.textBox}>
             <Octicons name="play" size={35} color={'white'}></Octicons>

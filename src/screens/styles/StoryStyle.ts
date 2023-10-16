@@ -16,6 +16,7 @@ export const StoryStyle = StyleSheet.create({
   },
   backButton:{
     position: 'absolute',
+    zIndex:10,
     top: 0,
     borderWidth:2,
     borderColor: 'white',

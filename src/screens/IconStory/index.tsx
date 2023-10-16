@@ -1,12 +1,12 @@
-import React, { useEffect, useMemo, useState } from 'react'
-import { Dimensions, StatusBar } from "react-native";
+import React, { useEffect, useMemo, useRef, useState } from 'react'
+import { Animated, Dimensions, Image, StatusBar } from "react-native";
 
-import { Image, useImage } from '@shopify/react-native-skia';
+import { Image as SKImage, useImage } from '@shopify/react-native-skia';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import PageTextLayer from './PageTextLayer';
 import CanvasLayer from './CanvasLayer';
-import { ASYNC_KEY_PREFIX, SCALE } from '../../config';
+import { ASYNC_KEY_PREFIX, MAINCOLOR, SCALE } from '../../config';
 import SyncTextLayer from './SyncTextLayer';
 import { getAsyncData } from '../../utils/asyncStorage';
 
@@ -15,8 +15,11 @@ import { useIsDownloaded } from '../LoadingScene/store';
 import { getIconStory } from '../../data/dataPreparation/iconStory';
 import { StoryData } from './types';
 import LastPage from '../LastPage';
+import { anim, reFadeAnim } from '../../utils/animation';
+import { wordStyle } from './style/PageTextStyle';
+import BackButton from '../components/StoryHeader/BackButton';
 
-function IconStory({ route }: any) {
+function IconStory({ route, navigation }: any) {
 
   //device dimension
   const deviceOrientations = { width: Dimensions.get('screen').width, height: Dimensions.get('screen').height };
@@ -33,6 +36,8 @@ function IconStory({ route }: any) {
   const isLoaded = useIsDownloaded((state: any) => state.isDownloaded);
 
   const setIsLoaded = useIsDownloaded((state: any) => state.setIsDownloaded)
+
+  const opacityValue = useRef(new Animated.Value(0)).current;
 
   // /** : initialize page **/
   useEffect(() => {
@@ -54,11 +59,11 @@ function IconStory({ route }: any) {
       fetchData();
     }
   }, [isLoaded])
-  
+
   const setPageNum = (status: number) => {
     if (status == 1) {
       setCurrentMainText(0);
-      setCurrentPageNum((prew) =>prew +1);
+      setCurrentPageNum((prew) => prew + 1);
     }
     if (status == -1) {
       setCurrentMainText(0);
@@ -70,6 +75,10 @@ function IconStory({ route }: any) {
     }
   }
 
+  useEffect(() => {
+    opacityValue.setValue(1);
+    anim(opacityValue, 0, 1000);
+  }, [currentPageNum])
   const setGlobalCurrentMainText = (a: number) => {
     setCurrentMainText(a);
   }
@@ -78,30 +87,31 @@ function IconStory({ route }: any) {
     setCurrentPageNum(num);
   }
 
-  return (  
+  return (
     (storyData && <SafeAreaView style={{ width: deviceOrientations.width, height: deviceOrientations.height }}>
       <StatusBar hidden={true}></StatusBar>
-      <PageTextLayer 
-        deviceWidth={deviceOrientations.width}
-        mainText={storyData[currentPageNum]?.text}
-        currentMainText={currentMainText}
-        iconData={storyData[currentPageNum]?.iconList}>
-      </PageTextLayer>
-
+      <Image resizeMode={'contain'} style={wordStyle.image} source={{ uri: storyData[currentPageNum]?.image }} />
       <SyncTextLayer
         mainText={storyData[currentPageNum]?.text}
         setGlobalCurrentMainText={setGlobalCurrentMainText}
       ></SyncTextLayer>
 
-       <CanvasLayer
+      <PageTextLayer
+        deviceWidth={deviceOrientations.width}
+        mainText={storyData[currentPageNum]?.text}
+        currentMainText={currentMainText}
+        iconData={storyData[currentPageNum]?.iconList}>
+      </PageTextLayer>
+      
+      <CanvasLayer
         deviceWidth={deviceOrientations.width}
         setPageNum={setPageNum}
         deviceHeight={deviceOrientations.height}
         mainText={storyData[currentPageNum]?.text[currentMainText]?.text}
         pageTouches={storyData[currentPageNum]?.touchable}>
-        <Image x={0} y={0} fit={'fitHeight'} height={deviceOrientations.height} width={deviceOrientations.width} image={useImage(storyData[currentPageNum]?.image)} />
+        {/* <SKImage x={0} y={0} fit={'fitHeight'} height={deviceOrientations.height} width={deviceOrientations.width} image={useImage(storyData[currentPageNum]?.image)} /> */}
 
-        <Image
+        <SKImage
           x={storyData[currentPageNum]?.detailImage?.position[0] * SCALE}
           y={storyData[currentPageNum]?.detailImage?.position[1] * SCALE} fit={'fitHeight'}
           width={storyData[currentPageNum]?.detailImage?.size[0] * SCALE}
@@ -109,9 +119,10 @@ function IconStory({ route }: any) {
           image={useImage(storyData[currentPageNum]?.detailImage?.image)} />
 
       </CanvasLayer>
+
       {(!isLoaded || isLoading) ? <LoadingScene isLoading={isLoading} ></LoadingScene> : <></>}
       {
-        (currentPageNum >= storyData.length && storyData.length > 0) ? <LastPage setCurrentPageNum={setCurrentPage}></LastPage> : <></>
+        (currentPageNum >= storyData.length && storyData.length > 0) ? <LastPage setCurrentPageNum={setCurrentPage}></LastPage> : <BackButton navigation={navigation} color={MAINCOLOR}></BackButton>
       }
     </SafeAreaView>)
   );

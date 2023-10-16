@@ -14,8 +14,7 @@ export const getIconStory = async (id: number) => {
     let apiUrl = IP + '/api/getPagesByStoryId/' + id;
     let response = await axios.get(apiUrl);
     const isExist = await isKeyExist(ASYNC_KEY_PREFIX + id);
-    // if (!isExist) await saveMediaToAsyncStorage(response.data.page, id);
-    await saveMediaToAsyncStorage(response.data.page, id);
+    if (!isExist) await saveMediaToAsyncStorage(response.data.page, id);
     return response.data;
   } catch (error) {
     console.log(error);

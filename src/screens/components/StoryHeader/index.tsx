@@ -3,6 +3,7 @@ import { StoryStyle } from "../../styles/StoryStyle";
 import CloudyEffect from "../CloudyEffect";
 import React from "react";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import BackButton from "./BackButton";
 
 type Props = {
   navigation: any,
@@ -12,16 +13,11 @@ type Props = {
 }
 
 export default function StoryHeader({ navigation, headerRatio, title, color }: Props) {
-  const handlePress = () => {
-    navigation.goBack();
-  }
   return (
     <React.Fragment>
       <CloudyEffect type={'threeCurve'} color={color} CANVAS_RATIO2={headerRatio}></CloudyEffect>
       <Text style={StoryStyle.proText}> {title} </Text>
-      <TouchableOpacity onPress={()=> handlePress()} style={StyleSheet.compose(StoryStyle.backButton, { backgroundColor: color })}>
-        <MaterialCommunityIcons name="arrow-u-left-top-bold" size={35} color={'white'}></MaterialCommunityIcons>
-      </TouchableOpacity>
+      <BackButton navigation={navigation} color={color}></BackButton>
     </React.Fragment>
   )
 }

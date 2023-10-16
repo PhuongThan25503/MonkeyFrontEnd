@@ -18,12 +18,16 @@ import StoryList from "../screens/StoryList";
 import StoryDetail from "../screens/StoryDetail";
 import StaticStory from "../screens/StaticStory";
 import IconStory from "../screens/IconStory";
+import { linking } from "./Linking";
+import { ActivityIndicator, Text } from "react-native";
+import LoadingScene from "../screens/LoadingScene";
+import Indicator from "../screens/components/Indicator/Indicator";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function AppStackNavigatior() {
   return (
-    <NavigationContainer>
+    <NavigationContainer linking={linking} fallback={<ActivityIndicator ></ActivityIndicator>}>
       <Stack.Navigator initialRouteName='Home'>
         <Stack.Screen
           name='Home'

@@ -7,6 +7,7 @@ import { useTextEffect } from './globalStates';
 export default function PageCurlLayer({
   deviceWidth,
   deviceHeight,
+  setZIndex,
   pageDirection,
   gestureHandler }: any) {
   const [animPath, setAnimPath] = useState('');
@@ -52,6 +53,7 @@ export default function PageCurlLayer({
   /**Drag gesture handler **/
   const onDrag = Gesture.Pan()
     .onStart((e) => {
+      setZIndex(10);
       if (e.absoluteX > deviceWidth - deviceWidth / 3) gestureDir = 1; // if gesture is swipe from left to right , it means co to previous page
       if (e.absoluteX < deviceWidth / 3) gestureDir = -1; // if gesture is swipe from right to left, it means go to right page
     })
@@ -61,6 +63,7 @@ export default function PageCurlLayer({
       }
     })
     .onEnd((e) => {
+      setZIndex(1);
       if (nextPageFlag) {
         setEffectIndex(-1);
         pageDirection({ status: 1, action: "next page" }); // status 
