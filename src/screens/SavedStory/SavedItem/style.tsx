@@ -1,5 +1,5 @@
-import { StyleSheet } from "react-native";
-
+import { Dimensions, StyleSheet } from "react-native";
+const {width, height} = Dimensions.get('window')
 export const StoryItemStyle = StyleSheet.create({
   overOuterBound:{
     borderColor: '#90ebfe',
@@ -10,6 +10,7 @@ export const StoryItemStyle = StyleSheet.create({
     backgroundColor: 'white',
   },
   overOuterLayer1:{
+    flex: 1,
     width: '95%',
     height: '100%',
     borderColor: '#90ebfe',
@@ -73,5 +74,23 @@ export const StoryItemStyle = StyleSheet.create({
     left: 9,
     top: 5,
     textAlign:'center'
-  }
+  },
+  taskStyle:{
+    flex:1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '40%',
+    position: 'absolute',
+    height: '100%',
+    opacity: 0.8,
+  },
+  touchBound:{
+    flex:1,
+    width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  flatList:{
+    marginLeft: width*0.04,
+  },
 });
