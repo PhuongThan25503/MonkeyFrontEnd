@@ -20,10 +20,15 @@ export default function SavedStory({ navigation }: any) {
     const fetchData = async () => {
       const data = await getAsyncData('saved_story');
       setStory(JSON.parse(data));
-      console.log(data)
     };
     fetchData();
   }, [])
+
+  function handleScroll(event:any) {
+    const { contentOffset } = event.nativeEvent;
+    console.log(contentOffset.y > 0 ? 'down' : 'up');
+    //setScrollDirection(direction);
+  }
 
   const onTopAction = () => {
     anim(cloudMove, 0, 200);
@@ -50,6 +55,7 @@ export default function SavedStory({ navigation }: any) {
         style={StoryItemStyle.flatList}
         numColumns={4}
         data={story}
+        onScroll={handleScroll}
         renderItem={({ item }) => ( 
           itemData(item)
         )}

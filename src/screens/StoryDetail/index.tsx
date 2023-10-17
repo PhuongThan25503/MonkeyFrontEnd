@@ -29,9 +29,11 @@ function StoryDetail({ navigation, route }: Props) {
   const [story, setStory] = useState<any>([]);
 
   useEffect(() => {
-    AsyncStorage.removeItem('Story1');
+    // AsyncStorage.removeItem('Story2');
+    // AsyncStorage.removeItem('saved_story');
     getStoryBasicInfoById(route.params.id).then(data => {
       setStory(data)
+      console.log(data)
     });
   }, [])
 

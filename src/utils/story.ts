@@ -1,6 +1,6 @@
 import { ASYNC_KEY_PREFIX, IP } from "../config";
 import axios from "axios";
-import { PageInterface, StoryInterface, touchableMediaData } from "../types";
+import { BasicStoryInfo, PageInterface, StoryInterface, touchableMediaData } from "../types";
 import RNFS from 'react-native-fs';
 import { getAsyncData, isKeyExist, pushAsyncStorage, saveAsyncData } from "./asyncStorage";
 
@@ -195,12 +195,20 @@ export async function getStoryBasicInfoById(id: number) {
 }
 
 export async function saveStoryInfo(id: number) {
-  let storyBasicInfo: any[] = [];
-  await getStoryBasicInfoById(id).then(data => storyBasicInfo = data);
+  let storyBasicInfo: any = [];
+  await getStoryBasicInfoById(id).then(async data => storyBasicInfo = {
+    story_id : data.story_id,
+    type_id : data.type_id,
+    thumbnail: await downloadMedia(data.thumbnail, 'Saved_stories', id, "thumbnail", (id + 'thumbnail_') + '.png'),
+    name: data.name
+  });
+
   isKeyExist('saved_story').then(isExist => {
     if (!isExist) {
+      console.log('non exist')
       saveAsyncData('saved_story', [storyBasicInfo]);
     } else {
+      console.log('exist')
       pushAsyncStorage('saved_story', storyBasicInfo);
     }
   })

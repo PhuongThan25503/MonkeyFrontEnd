@@ -15,6 +15,16 @@ export default function StoryList({ navigation }: any) {
     getAllStory().then(data => setStory(data));
   }, [])
 
+  function handleScroll(event:any) {
+    const { contentOffset } = event.nativeEvent;
+    if(contentOffset.y==0){
+      onTopAction()
+    }
+    if(contentOffset.y > 0 ){
+      onScrollDownAction()
+    }
+  }
+
   const onTopAction = () => {
     anim(cloudMove, 0, 200);
   }
@@ -55,6 +65,7 @@ export default function StoryList({ navigation }: any) {
         style={StoryListStyle.flatList}
         numColumns={4}
         data={story}
+        onScroll={handleScroll}
         renderItem={({ item }) => ( 
           itemData(item)
         )}

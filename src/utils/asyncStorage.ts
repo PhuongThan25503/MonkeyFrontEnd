@@ -22,7 +22,7 @@ export const pushAsyncStorage = async (key: string, element: any) =>{
     if(value !== null){
       const storyArray = JSON.parse(value);
       storyArray.push(element);
-      AsyncStorage.setItem('story', JSON.stringify(storyArray));
+      AsyncStorage.setItem('saved_story', JSON.stringify(storyArray));
     }
   })
   .catch((error) => console.log(error));

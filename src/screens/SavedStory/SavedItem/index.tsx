@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { View, Text, TouchableOpacity, Image, Dimensions, StyleSheet, Animated } from "react-native";
 
 import FontAwesome from "react-native-vector-icons/FontAwesome";
@@ -9,15 +9,17 @@ import { StoryItemStyle } from "./style";
 import TaskButton from "../TaskButton";
 import { anim } from "../../../utils/animation";
 import { removeStoryFromLocalStorage } from "../../../utils/DeleteStoryData";
+import { BasicStoryInfo } from "../../../types";
 
 type Props = {
-  story: any,
+  story: BasicStoryInfo,
   navigation: any
 }
 
 function StoryItem({ story, navigation }: Props) {
   const { width, height } = Dimensions.get('screen');
   const transX = useRef(new Animated.Value(-100)).current;
+  const [visible, setVisible] = useState(true);
 
   let toggle = true;
   const handleMainPress = () => {
@@ -29,8 +31,13 @@ function StoryItem({ story, navigation }: Props) {
       toggle=true;
     }
   }
+
+  const removingHandler = () =>{
+    setVisible(false);
+    removeStoryFromLocalStorage(story);
+  }
   return (
-    <View style={StyleSheet.compose(StoryItemStyle.overOuterBound, { width: width * 0.2, height: height * 0.5 })}>
+    visible && <View style={StyleSheet.compose(StoryItemStyle.overOuterBound, { width: width * 0.2, height: height * 0.5 })}>
       <View style={StoryItemStyle.overOuterLayer1}>
         <TouchableOpacity onPress={()=> handleMainPress()} style={StoryItemStyle.button}>
           <View style={StoryItemStyle.overBound}>
@@ -45,7 +52,7 @@ function StoryItem({ story, navigation }: Props) {
       </View>
       <Animated.View style={StyleSheet.compose( StoryItemStyle.taskStyle, {transform: [{translateX: transX}]} )}>
         <TaskButton color="green" onPress={() => navigation.navigate('StoryDetail', { id: story.story_id })} text="Play" icon={<Entypo name={'controller-play'} size={55}></Entypo>}></TaskButton>
-        <TaskButton color="red" onPress={() => removeStoryFromLocalStorage(story)} text="Remove" icon={<Ionicons name={'trash-bin'} size={35}></Ionicons>}></TaskButton>
+        <TaskButton color="red" onPress={() => removingHandler()} text="Remove" icon={<Ionicons name={'trash-bin'} size={35}></Ionicons>}></TaskButton>
       </Animated.View>
     </View>
   )

@@ -104,7 +104,9 @@ export type audioData = {
   duration: number,
 }
 
-export type asyncStoryData = {
-  image: string,
-  page: number
+export type BasicStoryInfo = {
+  story_id : number,
+  type_id : number,
+  thumbnail: string,
+  name: string
 }
