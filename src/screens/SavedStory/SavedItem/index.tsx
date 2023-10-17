@@ -1,7 +1,8 @@
 import React from "react";
-import { StoryItemStyle } from "./style/StoryItemStyle";
+
 import { View, Text, TouchableOpacity, Image, Dimensions, StyleSheet } from "react-native";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
+import { StoryItemStyle } from "./style";
 
 type Props = {
   name: string,

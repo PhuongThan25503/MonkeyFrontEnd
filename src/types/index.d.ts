@@ -13,6 +13,7 @@ export type RootStackParamList= {
   IconStory:undefined;
   StoryList:undefined;
   StaticStory: undefined;
+  SavedStory: undefined;
 }
 export type StackNavProps = {
   navigation: NativeStackNavigationProp<RootStackParamList>;

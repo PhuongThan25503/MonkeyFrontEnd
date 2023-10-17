@@ -1,12 +1,7 @@
-import { Dimensions } from "react-native";
 import { StyleSheet } from "react-native";
 
 export const StoryItemStyle = StyleSheet.create({
   overOuterBound:{
-    // width: '21.5%',
-    // height: '36%',
-    // width: width * 0.2,
-    // height: height * 0.5,
     borderColor: '#90ebfe',
     borderWidth: 1,
     borderRadius: 10, 

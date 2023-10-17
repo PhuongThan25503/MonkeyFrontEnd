@@ -4,7 +4,7 @@ import { defaultAudio, getAllAudio } from "../../utils/audio";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AudioItem from "../../components/Audios/AudioItem";
 import { ScrollView } from "react-native";
-import { HomeStyle } from "../styles/HomeStyle";
+import { HomeStyle } from "../Home/style";
 import { AudioItemStyle } from "../../components/Audios/style/AudioItemStyle";
 
 function Audio() {

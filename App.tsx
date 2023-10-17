@@ -6,19 +6,22 @@
  */
 
 import React, { useEffect } from 'react';
+import { Linking } from 'react-native';
 
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { RootStackParamList } from './src/types';
-import { REFRESH_INTERVAL } from './src/config';
-import { getAPIToken, refreshToken } from './src/utils/authenticate';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import AppStackNavigatior from './src/navigation/AppStackNavigator';
 import "react-native-gesture-handler";
 import dynamicLinks from '@react-native-firebase/dynamic-links';
+import messaging from '@react-native-firebase/messaging';
+
+import { RootStackParamList } from './src/types';
+import { REFRESH_INTERVAL } from './src/config';
+import AppStackNavigatior from './src/navigation/AppStackNavigator';
+import { getAPIToken, refreshToken } from './src/utils/authenticate';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
-const handleDynamicLink = (link:any) => {
+const handleDynamicLink = (link: any) => {
   // Handle dynamic link inside your own application
   if (link.url === 'https://monkeyapp.page.link/H3Ed') {
     console.log('good you did it')
@@ -26,22 +29,34 @@ const handleDynamicLink = (link:any) => {
 };
 
 function App() {
+  const notification =
+    useEffect(() => {
+      // Call the token refresh function
+      refreshToken();
 
-  useEffect(() => {
-    // Call the token refresh function
-    refreshToken();
+      // Set up the interval to call the token refresh function
+      const interValid = setInterval(refreshToken, REFRESH_INTERVAL);
 
-    // Set up the interval to call the token refresh function
-    const interValid = setInterval(refreshToken, REFRESH_INTERVAL);
+      const unsubscribe1 = dynamicLinks().onLink(handleDynamicLink);
+      // When the component is unmounted, remove the listener
 
-    const unsubscribe = dynamicLinks().onLink(handleDynamicLink);
-    // When the component is unmounted, remove the listener
+      //open the section via link
+      const unsubscribe2 = messaging().onNotificationOpenedApp(async remoteMessage => {
+        const link = remoteMessage.data?.link;
+        console.log(link);
+        if (typeof link === 'string') {
+          Linking.openURL(link).catch((err) => console.error('An error occurred', err));
+        } else {
+          console.error('The link is not a string');
+        }
+      });
 
-    return () => {
-      unsubscribe();
-      clearInterval(interValid);
-    }
-  }, []);
+      return () => {
+        unsubscribe1();
+        unsubscribe2();
+        clearInterval(interValid);
+      }
+    }, []);
 
   return (
     <AppStackNavigatior></AppStackNavigatior>

@@ -1,29 +1,30 @@
-import RNFS from 'react-native-fs';
 import axios from 'axios';
 
 import { ASYNC_KEY_PREFIX, IP, SCALE } from "../../config";
 import { isKeyExist, saveAsyncData } from "../../utils/asyncStorage";
-import { downloadMedia } from '../../utils/story';
+import { downloadMedia, saveStoryInfo } from '../../utils/story';
 import { Dimensions } from 'react-native';
-import { stringArrayToPolygonArray, verticlesToPurePath } from '../../screens/IconStory/utils';
+import { verticlesToPurePath } from '../../screens/Story/utils';
 
 const TYPE = "Static_story";
 
 export const getStaticStory = async (id: number) => {
   try {
     let apiUrl = IP + '/api/getPagesByStoryId/' + id;
-    let response = await axios.get(apiUrl);
     const isExist = await isKeyExist(ASYNC_KEY_PREFIX + id);
-    if(!isExist) await saveMediaToAsyncStorage(response.data.page, id);
-    return response.data;
+    if (!isExist) {
+      let response = await axios.get(apiUrl);
+      await saveStoryInfo(id);
+      await saveMediaToAsyncStorage(response.data, id);
+    }
   } catch (error) {
     console.log(error);
   }
 }
 
-export const saveMediaToAsyncStorage = async (pages: any, id: number) => {
+export const saveMediaToAsyncStorage = async (storyRaw: any, id: number) => {
   let story: any[] = [];
-  await Promise.all(pages.map(async (p: any, index: number) => {
+  await Promise.all(storyRaw.page.map(async (p: any, index: number) => {
     //thumbnail
     let thumbnailData = await downloadMedia(p.background, TYPE, id, "images", index + '.png');
 
@@ -62,5 +63,14 @@ export const saveMediaToAsyncStorage = async (pages: any, id: number) => {
     });
   }));
   story.sort((a, b) => a.page - b.page);
-  await saveAsyncData(ASYNC_KEY_PREFIX + id, story);
+  let storyData ={
+    basicInfo: {
+      story_id: storyRaw.story_id,
+      type_id: storyRaw.type_id,
+      name: storyRaw.name,
+      thumbnail: storyRaw.thumbnail
+    },
+    mainData: story
+  }
+  await saveAsyncData(ASYNC_KEY_PREFIX + id, storyData);
 };

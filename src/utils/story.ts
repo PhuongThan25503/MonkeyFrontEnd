@@ -2,7 +2,7 @@ import { ASYNC_KEY_PREFIX, IP } from "../config";
 import axios from "axios";
 import { PageInterface, StoryInterface, touchableMediaData } from "../types";
 import RNFS from 'react-native-fs';
-import { getAsyncData, isKeyExist, saveAsyncData } from "./asyncStorage";
+import { getAsyncData, isKeyExist, pushAsyncStorage, saveAsyncData } from "./asyncStorage";
 
 type touchableData = {
   path: string,
@@ -46,7 +46,7 @@ export const saveMediaToAsyncStorage = async (pages: any, id: number) => {
   await Promise.all(pages.map(async (p: any, index: number) => {
     //thumbnail
     let thumbnailData = await downloadMedia(p.background, "story", id, "images", index + '.png');
-    let mainAudios:any[] = [];
+    let mainAudios: any[] = [];
 
     //download audio
     await Promise.all(p.text_config.map(async (pt: any, idx: number) => {
@@ -72,7 +72,7 @@ export const saveMediaToAsyncStorage = async (pages: any, id: number) => {
         audio: mainAudios,
         syncData: JSON.parse(pt.audio.sync_data)
       })),
-      touchable: p.touch_.map((pt:any) =>({
+      touchable: p.touch_.map((pt: any) => ({
         text: pt.text.text,
         audio: pt.text.audio.audio,
       }))
@@ -179,10 +179,29 @@ export function replaceWord(sentence: string, words: string[], replacedBy: strin
 
 export async function getStoryBasicInfoById(id: number) {
   try {
-    let apiUrl = IP + '/api/getStoryById/' + id;
-    let response = await axios.get(apiUrl);
-    return response.data;
+    const isExist = await isKeyExist(ASYNC_KEY_PREFIX + id);
+    if (!isExist) {
+      let apiUrl = IP + '/api/getStoryById/' + id;
+      let response = await axios.get(apiUrl);
+      return response.data;
+    }
+    else{
+      const data = await getAsyncData(ASYNC_KEY_PREFIX + id);
+      return (JSON.parse(data).basicInfo);
+    }
   } catch (error) {
     console.log(error);
   }
+}
+
+export async function saveStoryInfo(id: number) {
+  let storyBasicInfo: any[] = [];
+  await getStoryBasicInfoById(id).then(data => storyBasicInfo = data);
+  isKeyExist('saved_story').then(isExist => {
+    if (!isExist) {
+      saveAsyncData('saved_story', [storyBasicInfo]);
+    } else {
+      pushAsyncStorage('saved_story', storyBasicInfo);
+    }
+  })
 }

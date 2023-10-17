@@ -1,27 +1,21 @@
 import { NavigationContainer } from "@react-navigation/native";
-import { gestureHandlerRootHOC } from "react-native-gesture-handler";
-import Home from "../screens/Home";
-import Story from "../screens/Story";
-import Audio from "../screens/Audio/Audio";
-
-import Login from "../screens/Login";
-import UserPersonalInfo from "../screens/UserPersonalInfo";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { gestureHandlerRootHOC } from "react-native-gesture-handler";
 import { RootStackParamList } from "../types";
-import Test from "../screens/Test";
-import History from "../screens/History";
+import { ActivityIndicator } from "react-native";
+import { linking } from "./Linking";
+import Home from "../screens/Home";
 import AudioManagement from "../screens/Audio";
+import StoryDetail from "../screens/StoryDetail";
+import IconStory from "../screens/Story/IconStory";
+import StaticStory from "../screens/Story/StaticStory";
+import SavedStory from "../screens/SavedStory";
+import Login from "../screens/Login";
+import UserPersonalInfo from "../screens/PersonalInfo";
+import Test from "../screens/Test";
 import AudioUploadScreen from "../screens/Audio/AudioUpload";
 import TextUploadScreen from "../screens/Audio/TextUpload";
-
 import StoryList from "../screens/StoryList";
-import StoryDetail from "../screens/StoryDetail";
-import StaticStory from "../screens/StaticStory";
-import IconStory from "../screens/IconStory";
-import { linking } from "./Linking";
-import { ActivityIndicator, Text } from "react-native";
-import LoadingScene from "../screens/LoadingScene";
-import Indicator from "../screens/components/Indicator/Indicator";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -33,11 +27,6 @@ export default function AppStackNavigatior() {
           name='Home'
           component={Home}
           options={{ headerShown: false, orientation: 'portrait' }}
-        />
-        <Stack.Screen
-          name='Story'
-          component={Story}
-          options={{ headerShown: false, orientation: 'landscape' }}
         />
         <Stack.Screen
           name='Audio'
@@ -60,6 +49,11 @@ export default function AppStackNavigatior() {
           options={{ headerShown: false, orientation: 'landscape' }}
         />
         <Stack.Screen
+          name='SavedStory'
+          component={SavedStory}
+          options={{ headerShown: false, orientation: 'landscape' }}
+        />
+        <Stack.Screen
           name='Login'
           component={Login}
           options={{ orientation: 'portrait' }}
@@ -73,11 +67,6 @@ export default function AppStackNavigatior() {
           name='Test'
           component={Test}
           options={{ headerShown: false, title: 'Test', orientation: 'landscape' }}
-        />
-        <Stack.Screen
-          name='History'
-          component={History}
-          options={{ headerShown: false, title: 'History', orientation: 'landscape' }}
         />
         <Stack.Screen
           name='AudioUpload'

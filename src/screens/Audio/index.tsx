@@ -1,6 +1,6 @@
 import { SafeAreaView } from "react-native-safe-area-context";
 import Audio from "./Audio";
-import { HomeStyle } from "../styles/HomeStyle";
+import { HomeStyle } from "../Home/style";
 import NavigateAudioScreens from "./NavigateAudioScreens";
 import { StackNavProps } from "../../types";
 
