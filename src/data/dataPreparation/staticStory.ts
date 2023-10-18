@@ -1,12 +1,10 @@
 import axios from 'axios';
 
-import { ASYNC_KEY_PREFIX, IP, SCALE } from "../../config";
+import { ASYNC_KEY_PREFIX, IP, SCALE, TYPE } from "../../config";
 import { isKeyExist, saveAsyncData } from "../../utils/asyncStorage";
 import { downloadMedia, saveStoryInfo } from '../../utils/story';
 import { Dimensions } from 'react-native';
 import { verticlesToPurePath } from '../../screens/Story/utils';
-
-const TYPE = "Static_story";
 
 export const getStaticStory = async (id: number) => {
   try {
@@ -68,6 +66,7 @@ export const saveMediaToAsyncStorage = async (storyRaw: any, id: number) => {
       story_id: storyRaw.story_id,
       type_id: storyRaw.type_id,
       name: storyRaw.name,
+      author: storyRaw.author.fullname,
       thumbnail: storyRaw.thumbnail
     },
     mainData: story
