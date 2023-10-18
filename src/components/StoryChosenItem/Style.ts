@@ -1,4 +1,5 @@
 import { Dimensions, StyleSheet } from "react-native";
+import { MAINCOLOR } from "../../config";
 
 export const ItemType = StyleSheet.create({
   ItemStyleBoundCover:{
@@ -10,6 +11,30 @@ export const ItemType = StyleSheet.create({
     borderWidth: 2,
     borderRadius: 25
   },
+  infoBound:{
+    flex: 5,
+    marginLeft: 30
+  },
+  title:{
+    color: 'gray',
+    fontWeight: 'bold',
+    fontSize: 18
+  },
+  ViewWrap: {
+    width: '90%',
+    height: '60%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: MAINCOLOR,
+    borderRadius: 20
+  },
+  ViewImage:{
+    flex:3,
+    alignItems: 'center',
+    alignContent: 'center',
+    height: '100%'
+  },
   ItemStyleBound:{
     width: '80%',
     height: '100%',
@@ -18,21 +43,26 @@ export const ItemType = StyleSheet.create({
     borderColor: '#90ebfe',
     borderWidth: 2,
     borderRadius: 25,
-    
+  },
+  buttonBound:{
+    flexDirection: 'row'
+  },
+  textBound:{
+    marginBottom: 10,
   },
   TouchableBound:{
+    overflow: "hidden",
     alignItems: 'center',
     alignContent: 'center'
   },
   image:{
     position:'absolute',
-    borderRadius: 25,
+    borderRadius: 20,
     width: '100%',
     height: '100%',
   },
   ChosenItem:{
-    width: '50%',
-    height: '90%'
+
   },
   nonChosenItem:{
     height: '20%',
@@ -41,6 +71,7 @@ export const ItemType = StyleSheet.create({
     alignContent: 'center'
   },
   text:{
+    margin: 10,
     padding: 10,
     color: 'white',
     textAlign: 'center',
@@ -48,7 +79,6 @@ export const ItemType = StyleSheet.create({
     fontSize: 20
   },
   textBox:{
-    padding: 10,
     borderRadius: 25,
     borderWidth: 2,
     borderColor: 'white',
