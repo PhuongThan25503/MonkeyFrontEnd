@@ -61,13 +61,6 @@ export const StoryDetailStyle = StyleSheet.create({
     borderRadius: 10,
     padding: 15
   },
-  ViewWrap: {
-    width: '100%',
-    height: '60%',
-    flexDirection: 'row',
-    alignItems: 'center',
-    alignContent: 'space-around',
-  },
   BoundBox: {
     backgroundColor: 'white'
   },
