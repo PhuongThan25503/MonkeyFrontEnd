@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from "react";
 import { Animated, FlatList, SafeAreaView, ScrollView, StyleSheet, View } from "react-native";
 
 import { StoryInterface } from "../../types";
-import { defaultStory, getAllStory } from "../../utils/story";
 import { anim } from "../../utils/animation";
 import StoryHeader from "../../components/StoryHeader";
 import { MAINCOLOR } from "../../config";
@@ -13,7 +12,7 @@ import { StoryItemStyle } from "./SavedItem/style";
 
 
 export default function SavedStory({ navigation }: any) {
-  const [story, setStory] = useState<StoryInterface[]>([defaultStory]);
+  const [story, setStory] = useState<StoryInterface[]>();
   const cloudMove = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -26,8 +25,12 @@ export default function SavedStory({ navigation }: any) {
 
   function handleScroll(event:any) {
     const { contentOffset } = event.nativeEvent;
-    console.log(contentOffset.y > 0 ? 'down' : 'up');
-    //setScrollDirection(direction);
+    if(contentOffset.y==0){
+      onTopAction()
+    }
+    if(contentOffset.y > 0 ){
+      onScrollDownAction()
+    }
   }
 
   const onTopAction = () => {
