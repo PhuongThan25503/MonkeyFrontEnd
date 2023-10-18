@@ -15,7 +15,7 @@ import { useIsDownloaded } from '../../LoadingScene/store';
 import { getIconStory } from '../../../data/dataPreparation/iconStory';
 import { StoryData } from '../types';
 import LastPage from '../../LastPage';
-import { anim, reFadeAnim } from '../../../utils/animation';
+import { anim } from '../../../utils/animation';
 import { wordStyle } from '../style/PageTextStyle';
 import BackButton from '../../../components/StoryHeader/BackButton';
 

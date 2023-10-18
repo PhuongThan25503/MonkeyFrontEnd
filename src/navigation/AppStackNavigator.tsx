@@ -16,6 +16,7 @@ import Test from "../screens/Test";
 import AudioUploadScreen from "../screens/Audio/AudioUpload";
 import TextUploadScreen from "../screens/Audio/TextUpload";
 import StoryList from "../screens/StoryList";
+import Setting from "../screens/Setting";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -82,6 +83,11 @@ export default function AppStackNavigatior() {
           name='StoryList'
           component={StoryList}
           options={{ headerShown: false, title: 'Story List', orientation: 'landscape' }}
+        />
+        <Stack.Screen
+          name='Setting'
+          component={Setting}
+          options={{ headerShown: false, orientation: 'landscape' }}
         />
       </Stack.Navigator>
     </NavigationContainer>

@@ -1,7 +1,7 @@
 import { Animated, Dimensions, FlatList, SafeAreaView, ScrollView, StatusBar, StyleSheet, View } from "react-native";
 import StoryItem from "../../components/Stories/StoryItem";
 import { useEffect, useRef, useState } from "react";
-import { defaultStory, getAllStory } from "../../utils/story";
+import { getAllStory } from "../../utils/story";
 import { StoryInterface } from "../../types";
 import { StoryListStyle } from "./style";
 import { anim } from "../../utils/animation";
@@ -9,7 +9,7 @@ import StoryHeader from "../../components/StoryHeader";
 import { MAINCOLOR } from "../../config";
 
 export default function StoryList({ navigation }: any) {
-  const [story, setStory] = useState<StoryInterface[]>([defaultStory]);
+  const [story, setStory] = useState<StoryInterface[]>();
   const cloudMove = useRef(new Animated.Value(0)).current;
   useEffect(() => {
     getAllStory().then(data => setStory(data));

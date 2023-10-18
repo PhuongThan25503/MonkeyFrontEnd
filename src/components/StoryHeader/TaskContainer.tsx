@@ -1,13 +1,18 @@
 import { Text, TouchableOpacity, View } from "react-native";
 import { StoryHeaderStyle } from "./style";
 
-export default function TaskContainer() {
+type Props = {
+  text : string,
+  icon : JSX.Element,
+  onPress : () => void
+}
+
+export default function TaskContainer({text, icon, onPress}: Props) {
 
   return (
-    <TouchableOpacity>
-      <View style={StoryHeaderStyle.task}>
-        <Text style={StoryHeaderStyle.text}>Saved story</Text>
-      </View>
+    <TouchableOpacity onPress={onPress} style={StoryHeaderStyle.task}>
+        {icon}
+        <Text style={StoryHeaderStyle.taskText}>  {text}</Text>
     </TouchableOpacity>
   )
 }

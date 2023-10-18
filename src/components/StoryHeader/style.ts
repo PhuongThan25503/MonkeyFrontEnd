@@ -6,6 +6,12 @@ export const StoryHeaderStyle = StyleSheet.create({
     color: 'black',
     width: '100%',
   },
+  taskText: {
+    color: 'white',
+    width: '100%',
+    fontWeight: 'bold',
+    fontSize: 19
+  },
   proText: {
     textAlign: 'center',
     fontSize: 40,
@@ -17,14 +23,19 @@ export const StoryHeaderStyle = StyleSheet.create({
   },
   task:{
     backgroundColor: MAINCOLOR,
-    height: 200,
-    width:100,
+    height: '60%',
+    width: '100%',
+    alignItems: 'center',
+    flexDirection: 'row',
+    paddingLeft: 10,
+    borderWidth: 2,
+    borderColor: 'white',
+    borderRadius: 10
   },
   taskContainer:{
-    position: 'absolute',
     zIndex: 10,
-    top: 100,
-    right: 0
+    right: 0,
+    width: '100%'
   },
   backButton: {
     position: 'absolute',
@@ -35,11 +46,18 @@ export const StoryHeaderStyle = StyleSheet.create({
     borderRadius: 100,
     padding: 15
   },
-  menuButton: {
+  buttonBound:{
     position: 'absolute',
-    zIndex: 10,
+    width: '20%',
+    height: '100%',
     top: 0,
-    right: 0,
+    right:0,
+    alignItems: 'flex-end',
+  },
+  menuButton: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 10,
     borderWidth: 2,
     borderColor: 'white',
     borderRadius: 10,

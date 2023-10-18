@@ -53,6 +53,7 @@
     "@types/react": "^18.0.24",
     "@types/react-native-canvas": "^0.1.9",
     "@types/react-native-orientation": "^5.0.1",
+    "@types/react-native-push-notification": "^8.1.2",
     "@types/react-native-vector-icons": "^6.4.14",
     "@types/react-test-renderer": "^18.0.0",
     "babel-jest": "^29.2.1",

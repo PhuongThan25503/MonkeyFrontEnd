@@ -15,9 +15,10 @@ import dynamicLinks from '@react-native-firebase/dynamic-links';
 import messaging from '@react-native-firebase/messaging';
 
 import { RootStackParamList } from './src/types';
-import { REFRESH_INTERVAL } from './src/config';
+import { NOTICHANNEL, REFRESH_INTERVAL } from './src/config';
 import AppStackNavigatior from './src/navigation/AppStackNavigator';
 import { getAPIToken, refreshToken } from './src/utils/authenticate';
+import PushNotification from 'react-native-push-notification';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -29,34 +30,45 @@ const handleDynamicLink = (link: any) => {
 };
 
 function App() {
-  const notification =
-    useEffect(() => {
-      // Call the token refresh function
-      refreshToken();
+  PushNotification.createChannel(
+    {
+      channelId: NOTICHANNEL,
+      channelName: 'My Channel',
+      channelDescription: 'A channel to categorize your notifications',
+      soundName: 'default',
+      importance: 4,
+      vibrate: true,
+    },
+    (created) => console.log(`createChannel returned '${created}'`)
+  );
 
-      // Set up the interval to call the token refresh function
-      const interValid = setInterval(refreshToken, REFRESH_INTERVAL);
+  useEffect(() => {
+    // Call the token refresh function
+    refreshToken();
 
-      const unsubscribe1 = dynamicLinks().onLink(handleDynamicLink);
-      // When the component is unmounted, remove the listener
+    // Set up the interval to call the token refresh function
+    const interValid = setInterval(refreshToken, REFRESH_INTERVAL);
 
-      //open the section via link
-      const unsubscribe2 = messaging().onNotificationOpenedApp(async remoteMessage => {
-        const link = remoteMessage.data?.link;
-        console.log(link);
-        if (typeof link === 'string') {
-          Linking.openURL(link).catch((err) => console.error('An error occurred', err));
-        } else {
-          console.error('The link is not a string');
-        }
-      });
+    const unsubscribe1 = dynamicLinks().onLink(handleDynamicLink);
+    // When the component is unmounted, remove the listener
 
-      return () => {
-        unsubscribe1();
-        unsubscribe2();
-        clearInterval(interValid);
+    //open the section via link
+    const unsubscribe2 = messaging().onNotificationOpenedApp(async remoteMessage => {
+      const link = remoteMessage.data?.link;
+      console.log(link);
+      if (typeof link === 'string') {
+        Linking.openURL(link).catch((err) => console.error('An error occurred', err));
+      } else {
+        console.error('The link is not a string');
       }
-    }, []);
+    });
+
+    return () => {
+      unsubscribe1();
+      unsubscribe2();
+      clearInterval(interValid);
+    }
+  }, []);
 
   return (
     <AppStackNavigatior></AppStackNavigatior>

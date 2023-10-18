@@ -19,4 +19,8 @@ export const MAINCOLOR = '#90ebfe';
 //prefix for async data
 export const ASYNC_KEY_PREFIX = 'Story';
 
+export const TYPE = 'Story';
+
+//id channel for notification
+export const NOTICHANNEL = '250503MonkeyApp';
 
