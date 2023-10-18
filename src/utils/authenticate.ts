@@ -23,17 +23,19 @@ export const refreshToken = async () => {
   const API_URL = IP + '/api/refresh-token';
   try {
     let apiToken = await getAPIToken();
-    let config = {
-      headers: { Authorization: `Bearer ${apiToken}` }
-    };
-    let response = await axios.post(API_URL, '', config);
-    let data = await response.data;
-    let {token} = await data; // take the token out of response data
-    
-    //save the api token 
-    await Keychain.setGenericPassword('apitoken', token, {
-      service: SECURE_KEY,
-    });
+    if (apiToken != '') {
+      let config = {
+        headers: { Authorization: `Bearer ${apiToken}` }
+      };
+      let response = await axios.post(API_URL, '', config);
+      let data = await response.data;
+      let { token } = await data; // take the token out of response data
+
+      //save the api token 
+      await Keychain.setGenericPassword('apitoken', token, {
+        service: SECURE_KEY,
+      });
+    }
   } catch (error) {
     console.log(error);
   }
@@ -47,14 +49,19 @@ export const isLoggedIn = async () => {
     headers: { Authorization: `Bearer ${apiToken}` }
   };
   try {
-    let response = await axios.post(API_URL, '', config);
-
-    // invalid credentials
-    if (response.status == 401) {
-      return false;
+    if (apiToken == '') {
+      return false
     }
-    else if (response.status == 200) {
-      return true;
+    else {
+      let response = await axios.post(API_URL, '', config);
+
+      // invalid credentials
+      if (response.status == 401) {
+        return false;
+      }
+      else if (response.status == 200) {
+        return true;
+      }
     }
   } catch (error) {
     console.error(error);

@@ -1,7 +1,8 @@
+import RNFS from 'react-native-fs';
+
 import { ASYNC_KEY_PREFIX, IP } from "../config";
 import axios from "axios";
 import { BasicStoryInfo, PageInterface, StoryInterface, touchableMediaData } from "../types";
-import RNFS from 'react-native-fs';
 import { getAsyncData, isKeyExist, pushAsyncStorage, saveAsyncData } from "./asyncStorage";
 
 type touchableData = {
@@ -85,10 +86,10 @@ export const saveMediaToAsyncStorage = async (pages: any, id: number) => {
 
 export const downloadMedia = async (url: string, dir: string, id: number, type: string, name: string) => {
   try {
-    const response = await fetch(url);
-    const fileName = `${name}`;
-    const path = `${RNFS.DocumentDirectoryPath}/${dir}/${id}/${type}/${fileName}`;
-    await RNFS.mkdir(`${RNFS.DocumentDirectoryPath}/${dir}/${id}/${type}`);
+    const response = await fetch(url); //fetch file
+    const fileName = `${name}`; // set file name
+    const path = `${RNFS.DocumentDirectoryPath}/${dir}/${id}/${type}/${fileName}`; //set path
+    await RNFS.mkdir(`${RNFS.DocumentDirectoryPath}/${dir}/${id}/${type}`); //made directory
     const blob = await response.blob();
     const reader = new FileReader();
     reader.readAsDataURL(blob);
@@ -102,6 +103,70 @@ export const downloadMedia = async (url: string, dir: string, id: number, type: 
   }
 };
 
+export const deleteFolderById = async (dir: string, id: number): Promise<void> => {
+  const dirPath = `file://${RNFS.DocumentDirectoryPath}/${dir}/${id}`
+  try {
+    //remove all files
+    await recursiveDeleteFiles(dirPath);
+    // await getTotalDirectorySize(dirPath);
+
+    // remove directory
+    await RNFS.unlink(dirPath);
+  } catch (error: any) {
+    console.log(`Error deleting directory: ${error.message}`);
+  }
+};
+
+export const recursiveDeleteFiles = async (dir:string): Promise<void> =>{
+  try {
+    const files = await RNFS.readDir(dir);
+    await Promise.all(
+      files.map(async file => {
+        if (file.isDirectory()) {
+          return await recursiveDeleteFiles(file.path);
+        } else {
+          RNFS.unlink(file.path);
+        }
+      })
+    );
+  } catch (error: any) {
+    console.log(`Error delete directory: ${error.message}`);
+  }
+}
+
+export const getDirectorySizeArray = async (temp: (number | void)[] = [], dir: string): Promise<void> => {
+  try {
+    const files = await RNFS.readDir(dir);
+    const fileSizes = await Promise.all(
+      files.map(async file => {
+        if (file.isDirectory()) {
+          return await getDirectorySizeArray(temp, file.path);
+        } else {
+          return file.size;
+        }
+      })
+    );
+    temp.push(...fileSizes);
+  } catch (error: any) {
+    console.log(`Error getting directory size: ${error.message}`);
+  }
+}
+
+export const getTotalDirectorySize = async (dir: string) => {
+  let temp: (number)[] = [];
+  await getDirectorySizeArray(temp, dir);
+  temp = temp.filter(element => typeof element === 'number');
+  let sum=0;
+  if(temp.length>0){
+    sum = temp.reduce((accumulator, currentValue) => accumulator + currentValue);
+  }
+  return bytesToMegabytes(sum);
+}
+
+function bytesToMegabytes(bytes: number): number {
+  return Math.round((bytes / (1024 * 1024)) * 10) / 10;
+}
+
 export const getPageDetailById = async (id: number) => {
   try {
     let apiUrl = IP + '/api/getPageById/' + id;
@@ -110,18 +175,6 @@ export const getPageDetailById = async (id: number) => {
   } catch (error) {
     console.log(error);
   }
-}
-
-export const defaultStory: StoryInterface = {
-  story_id: 0,
-  author_id: 0,
-  type_id: 0,
-  name: 'N/A',
-  thumbnail: 'N/A',
-  coin: 0,
-  isActive: false,
-  created_at: 'N/A',
-  updated_at: 'N/A',
 }
 
 export const defaultPage: PageInterface = {
@@ -183,9 +236,16 @@ export async function getStoryBasicInfoById(id: number) {
     if (!isExist) {
       let apiUrl = IP + '/api/getStoryById/' + id;
       let response = await axios.get(apiUrl);
-      return response.data;
+      let basicInfo = {
+        story_id: response.data.story_id,
+        type_id: response.data.type_id,
+        name: response.data.name,
+        author: response.data.author.fullname,
+        thumbnail: response.data.thumbnail
+      }
+      return basicInfo;
     }
-    else{
+    else {
       const data = await getAsyncData(ASYNC_KEY_PREFIX + id);
       return (JSON.parse(data).basicInfo);
     }
@@ -197,18 +257,16 @@ export async function getStoryBasicInfoById(id: number) {
 export async function saveStoryInfo(id: number) {
   let storyBasicInfo: any = [];
   await getStoryBasicInfoById(id).then(async data => storyBasicInfo = {
-    story_id : data.story_id,
-    type_id : data.type_id,
+    story_id: data.story_id,
+    type_id: data.type_id,
     thumbnail: await downloadMedia(data.thumbnail, 'Saved_stories', id, "thumbnail", (id + 'thumbnail_') + '.png'),
     name: data.name
   });
 
-  isKeyExist('saved_story').then(isExist => {
+  await isKeyExist('saved_story').then(isExist => {
     if (!isExist) {
-      console.log('non exist')
       saveAsyncData('saved_story', [storyBasicInfo]);
     } else {
-      console.log('exist')
       pushAsyncStorage('saved_story', storyBasicInfo);
     }
   })

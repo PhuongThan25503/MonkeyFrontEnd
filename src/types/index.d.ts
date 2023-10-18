@@ -14,6 +14,7 @@ export type RootStackParamList= {
   StoryList:undefined;
   StaticStory: undefined;
   SavedStory: undefined;
+  Setting: undefined;
 }
 export type StackNavProps = {
   navigation: NativeStackNavigationProp<RootStackParamList>;
