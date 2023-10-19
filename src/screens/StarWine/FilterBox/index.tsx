@@ -36,6 +36,9 @@ export default function FilterBox({setListOfMarker, isDisplay, setIsDisplay }: P
 
   useEffect(()=>{
     console.log(dataSet);
+    if((dataSet.chosenDay.value==1 || dataSet.chosenDay.value==2) && dataSet.chosenTime.value==0){
+      setDataSet({...dataSet, chosenTime: {keyname: "lunch", value: 1}})
+    }
   },[dataSet])
 
   return (
@@ -49,7 +52,7 @@ export default function FilterBox({setListOfMarker, isDisplay, setIsDisplay }: P
           <DayChoosingPart chosenDay={dataSet.chosenDay} setChosenDay={(keyname: string, value: number) => setDataSet({ ...dataSet, chosenDay: { keyname: keyname, value: value, toStringValue: DayValueTranform(value) } })}></DayChoosingPart>
           <TimeChoosingPart chosenTime={dataSet.chosenTime} setChosenTime={(keyname: string, value: number) => setDataSet({ ...dataSet, chosenTime: { keyname: keyname, value: value } })}></TimeChoosingPart>
           {dataSet.chosenTime.value==3 && 
-          <TimeSlider min={900} max={2300}></TimeSlider>}
+          <TimeSlider setDataSet={(timeStart: number, timeEnd: number) => setDataSet({...dataSet, timeStart: timeStart, timeEnd: timeEnd})} min={900} max={2300}></TimeSlider>}
           {dataSet.chosenDay.value == 2 && 
           <CalendarButton 
             customDay={dataSet.chosenDay.toStringValue} 

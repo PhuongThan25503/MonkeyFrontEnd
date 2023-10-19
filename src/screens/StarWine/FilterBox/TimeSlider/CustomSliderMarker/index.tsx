@@ -2,7 +2,7 @@ import { Text, View } from "react-native"
 import { CustomMarkerStyle } from "./style"
 
 type Props = {
-  value: number
+  value: string
 }
 
 export default function CustomSliderMarker({ value }: Props) {

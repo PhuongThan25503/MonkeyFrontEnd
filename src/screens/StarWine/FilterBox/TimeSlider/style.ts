@@ -2,7 +2,7 @@ import { StyleSheet } from "react-native";
 
 export const TimeSlideStyle =  StyleSheet.create({
   screen:{
-    height: 90,
+    height: 60,
     backgroundColor: 'white',
     alignItems: 'center'
   },

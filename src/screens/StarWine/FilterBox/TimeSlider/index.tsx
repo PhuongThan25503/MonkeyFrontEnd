@@ -1,39 +1,42 @@
+import React from "react";
+import { View } from "react-native";
+
 import MultiSlider from "@ptomasroos/react-native-multi-slider";
-import React, { useState } from "react";
-import { Text, View } from "react-native";
+
 import { TimeSlideStyle } from "./style";
 import CustomSliderMarker from "./CustomSliderMarker";
+import { convertToTime } from "../../ultis/getDataHelper";
 
 type Props = {
   min: number,
-  max: number
+  max: number,
+  setDataSet: (start: number, end: number) => void
 }
 
-export default function TimeSlider({ min, max }: Props) {
-  const [range, setRange] = useState([900, 2300]);
+export default function TimeSlider({ min, max, setDataSet }: Props) {
 
   const handleRangeChange = (newRange: any) => {
-    setRange(newRange);
-    console.log(newRange)
+    setDataSet(newRange[0], newRange[1]);
   };
 
   return (
     <View style={TimeSlideStyle.screen}>
       <MultiSlider
-        values={range}
-        onValuesChange={handleRangeChange}
+        values={[min, max]}
+        onValuesChangeFinish={handleRangeChange}
         isMarkersSeparated={true}
         trackStyle={{backgroundColor: 'gray', height: 3}}
+        
         customMarkerLeft={(e) => {
           return (<CustomSliderMarker
-            value={e.currentValue} />)
+            value={convertToTime(e.currentValue)} />)
         }}
         customMarkerRight={(e) => {
           return (<CustomSliderMarker
-            value={e.currentValue} />)
+            value={convertToTime(e.currentValue)} />)
         }}
-        min={900}
-        max={2300}
+        min={min}
+        max={max}
         step={10}
         allowOverlap={false}
         snapped
