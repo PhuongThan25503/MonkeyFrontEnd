@@ -12,7 +12,7 @@ type Props = {
 }
 
 export default function MainButton({ setChosen, currentChosen, name, keyname, value }: Props) {
-  const [chosenValue, setChosenValue] = useState<number>(-10);
+  const [chosenValue, setChosenValue] = useState<number>(value);
 
   const handlePress = () => {
     setChosen(keyname, value);

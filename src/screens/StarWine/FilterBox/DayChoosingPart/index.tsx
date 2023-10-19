@@ -12,11 +12,10 @@ type Props={
 
 export default function DayChoosingPart({setChosenDay, chosenDay}: Props) {
 
-  const KEY_NAME = 'date'
   const buttons = (<>
-    <MainButton currentChosen={chosenDay?.value} keyname={KEY_NAME} value={0} name="Today" setChosen={(key: string, value: number) => setChosenDay(key, value)}></MainButton>
-    <MainButton currentChosen={chosenDay?.value} keyname={KEY_NAME} value={1} name="Tomorrow" setChosen={(key: string, value: number) => setChosenDay(key, value)}></MainButton>
-    <MainButton currentChosen={chosenDay?.value} keyname={KEY_NAME} value={2} name="Another Date" setChosen={(key: string, value: number) => setChosenDay(key, value)}></MainButton>
+    <MainButton currentChosen={chosenDay?.value} keyname={'today'} value={0} name="Today" setChosen={(key: string, value: number) => setChosenDay(key, value)}></MainButton>
+    <MainButton currentChosen={chosenDay?.value} keyname={'tomorrow'} value={1} name="Tomorrow" setChosen={(key: string, value: number) => setChosenDay(key, value)}></MainButton>
+    <MainButton currentChosen={chosenDay?.value} keyname={'custom'} value={2} name="Another Date" setChosen={(key: string, value: number) => setChosenDay(key, value)}></MainButton>
   </>
   )
 

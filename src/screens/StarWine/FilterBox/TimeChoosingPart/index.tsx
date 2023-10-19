@@ -1,5 +1,3 @@
-import { useState } from "react";
-
 import MainButtonLayer from "../MainButtonLayer";
 import MainButton from "../MainButtonLayer/MainButton";
 import { View } from "react-native";
@@ -13,10 +11,10 @@ type Props={
 export default function TimeChoosingPart({setChosenTime, chosenTime}: Props) {
 
   const buttons = (<>
-    <MainButton currentChosen={chosenTime?.value} keyname="date" value={0} name="Open now" setChosen={(key: string, value: number) => setChosenTime(key, value)}></MainButton>
-    <MainButton currentChosen={chosenTime?.value} keyname="date" value={1} name="Lunch" setChosen={(key: string, value: number) => setChosenTime(key, value)}></MainButton>
-    <MainButton currentChosen={chosenTime?.value} keyname="date" value={2} name="Dinner" setChosen={(key: string, value: number) => setChosenTime(key, value)}></MainButton>
-    <MainButton currentChosen={chosenTime?.value} keyname="date" value={3} name="Choose your time" setChosen={(key: string, value: number) => setChosenTime(key, value)}></MainButton>
+    <MainButton currentChosen={chosenTime?.value} keyname="open-now" value={0} name="Open now" setChosen={(key: string, value: number) => setChosenTime(key, value)}></MainButton>
+    <MainButton currentChosen={chosenTime?.value} keyname="lunch" value={1} name="Lunch" setChosen={(key: string, value: number) => setChosenTime(key, value)}></MainButton>
+    <MainButton currentChosen={chosenTime?.value} keyname="dinner" value={2} name="Dinner" setChosen={(key: string, value: number) => setChosenTime(key, value)}></MainButton>
+    <MainButton currentChosen={chosenTime?.value} keyname="custom" value={3} name="Choose your time" setChosen={(key: string, value: number) => setChosenTime(key, value)}></MainButton>
   </>
   )
 
