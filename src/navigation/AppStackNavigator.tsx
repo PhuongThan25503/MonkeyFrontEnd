@@ -73,7 +73,7 @@ export default function AppStackNavigatior() {
         <Stack.Screen
           name='Test'
           component={Test}
-          options={{ headerShown: false, title: 'Test', orientation: 'landscape' }}
+          options={{ headerShown: false, title: 'Test', orientation: 'portrait' }}
         />
         <Stack.Screen
           name='AudioUpload'

@@ -15,7 +15,7 @@ export const FilterBoxStyle = StyleSheet.create({
   },
   mainBox:{
     width: '80%',
-    minHeight: '50%',
+    minHeight: '60%',
     backgroundColor: 'white',
   },
   fadedBackground:{

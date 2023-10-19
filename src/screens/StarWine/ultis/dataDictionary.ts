@@ -7,6 +7,7 @@ interface KeyExporter {
 export const DayValueDictionary : KeyExporter = {
   0: getCurrentDate(),
   1: getTomorrowDate(),
+  2: getCurrentDate()
 }
 
 export const DayValueTranform =(n: number)=>{
