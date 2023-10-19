@@ -3,6 +3,7 @@ export const linking = {
   config: {
     screens: {
       StoryList: 'H3Ed',
+      Story: 'eiuewu'
     },
   },
 };

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { mainText } from '../../types';
 import SoundPlayer from "react-native-sound-player";
-import { useTextEffect } from "./globalStates/index";
+import { useTextEffect, useTouchable } from "./globalStates/index";
 
 export default function SyncTextLayer({ mainText, setGlobalCurrentMainText }: any) {
   //ready to play sound ?
@@ -11,6 +11,9 @@ export default function SyncTextLayer({ mainText, setGlobalCurrentMainText }: an
   const [currentMainText, setCurrentMainText] = useState(0);
 
   const setTextEffect = useTextEffect((state: any) => state.setEffectIndex);
+
+  const setIsTouchable = useTouchable((state: any) => state.setTouchable);
+
 
   const timerId = useRef<any>();
 
@@ -45,6 +48,7 @@ export default function SyncTextLayer({ mainText, setGlobalCurrentMainText }: an
     setTextEffect(-1);
     setIsReadyToPlaySound(true);
     setCurrentMainText(0);
+    return() => {clearInterval(timerId.current)}
   }, [mainText])
 
   /** if current main text has change, play the sound **/
@@ -61,6 +65,7 @@ export default function SyncTextLayer({ mainText, setGlobalCurrentMainText }: an
       setGlobalCurrentMainText(currentMainText);
       playMainAudio();
       setIsReadyToPlaySound(false);
+      setIsTouchable(false);
     }
   }, [isReadyToPlaySound])
 
@@ -89,8 +94,10 @@ export default function SyncTextLayer({ mainText, setGlobalCurrentMainText }: an
           wordIndex++;
         }
       } else {
-        if (wordIndex == syncData.length) // if reach limit ,stop 
+        if (wordIndex == syncData.length){ // if reach limit ,stop 
           switchEffectFlag = false;
+          setIsTouchable(true);
+        }
         else {
           switchEffectFlag = true; // if not , go to the next
         }

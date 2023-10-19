@@ -7,7 +7,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import Entypo from "react-native-vector-icons/Entypo";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
-import FontAwesome from "react-native-vector-icons/FontAwesome";
+import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import { StackNavProps, User } from "../../types";
 import { defaultUser, getUserInfo } from "../../utils/user";
 import { getAPIToken, isLoggedIn } from "../../utils/authenticate";
@@ -61,7 +61,7 @@ function Home({ navigation }: StackNavProps) {
       <View style={HomeStyle.functionButtonField}>
         <FunctionalButton styleProp={HomeStyle.functionalButton} title={"Story"} Icon={<Entypo name='open-book' style={FunctionalButtonStyle.icon}></Entypo>} onPressProp={() => navigation.navigate('StoryList')}></FunctionalButton>
         <FunctionalButton styleProp={HomeStyle.functionalButton} title={"Audio"} Icon={<MaterialIcons name='audiotrack' style={FunctionalButtonStyle.icon}></MaterialIcons>} onPressProp={() => navigation.navigate('Audio')}></FunctionalButton>
-        <FunctionalButton styleProp={HomeStyle.functionalButton} title={"History"} Icon={<FontAwesome name='history' style={FunctionalButtonStyle.icon}></FontAwesome>} onPressProp={() => navigation.navigate('History')}></FunctionalButton>
+        <FunctionalButton styleProp={HomeStyle.functionalButton} title={"StarWine"} Icon={<FontAwesome5 name='wine-glass' style={FunctionalButtonStyle.icon}></FontAwesome5>} onPressProp={() => navigation.navigate('StarWine')}></FunctionalButton>
         <FunctionalButton styleProp={HomeStyle.functionalButton} title={"Setting"} Icon={<AntDesign name='setting' style={FunctionalButtonStyle.icon}></AntDesign>} onPressProp={() => navigation.navigate('Test')}></FunctionalButton>
       </View>
     </SafeAreaView>

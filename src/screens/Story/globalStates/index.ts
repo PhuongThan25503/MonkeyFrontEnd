@@ -28,3 +28,8 @@ export const useStory = create((set) => ({
   setCurrentPageNum: (num: number) => set(() => ({ currentPageNum: num})),
   setStoryNumPage: (num: number) => set(() => ({ storyNumPage: num})),
 }));
+
+export const useTouchable = create((set) => ({
+  touchable: false,
+  setTouchable: ( status : boolean) => set(() => ({ touchable:  status})),
+}));

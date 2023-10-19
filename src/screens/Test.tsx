@@ -12,8 +12,20 @@ export default function Test() {
     return unsubscribe;
   }, []);
   return (
-    <View>
-
+    <View style={{
+      borderColor: 'red',
+      borderWidth: 20,
+      alignContent: 'center',
+      alignItems: 'center',
+      height: 200
+    }}>
+      <View style={{
+        backgroundColor: 'yellow',
+        height: 100,
+        width: 100,
+        position: 'relative'
+      }}>
+      </View>
     </View>
   );
 

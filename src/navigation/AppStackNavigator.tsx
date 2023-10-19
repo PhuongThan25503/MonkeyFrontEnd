@@ -17,6 +17,7 @@ import AudioUploadScreen from "../screens/Audio/AudioUpload";
 import TextUploadScreen from "../screens/Audio/TextUpload";
 import StoryList from "../screens/StoryList";
 import Setting from "../screens/Setting";
+import StartWine from "../screens/StarWine";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -27,6 +28,11 @@ export default function AppStackNavigatior() {
         <Stack.Screen
           name='Home'
           component={Home}
+          options={{ headerShown: false, orientation: 'portrait' }}
+        />
+        <Stack.Screen
+          name='StarWine'
+          component={StartWine}
           options={{ headerShown: false, orientation: 'portrait' }}
         />
         <Stack.Screen

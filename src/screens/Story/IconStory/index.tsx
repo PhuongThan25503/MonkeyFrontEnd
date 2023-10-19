@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Animated, Dimensions, Image, StatusBar } from "react-native";
 
 import { Image as SKImage, useImage } from '@shopify/react-native-skia';
@@ -90,7 +90,7 @@ function IconStory({ route, navigation }: any) {
   return (
     (storyData && <SafeAreaView style={{ width: deviceOrientations.width, height: deviceOrientations.height }}>
       <StatusBar hidden={true}></StatusBar>
-      <Image resizeMode={'contain'} style={wordStyle.image} source={{ uri: storyData[currentPageNum]?.image }} />
+      { storyData[currentPageNum]?.image && <Image resizeMode={'contain'} style={wordStyle.image} source={{ uri: storyData[currentPageNum]?.image }} />}
       <SyncTextLayer
         mainText={storyData[currentPageNum]?.text}
         setGlobalCurrentMainText={setGlobalCurrentMainText}
