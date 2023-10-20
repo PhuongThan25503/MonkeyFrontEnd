@@ -1,6 +1,8 @@
 import * as Keychain from 'react-native-keychain';
 import { IP, SECURE_KEY } from '../config';
 import axios from 'axios';
+import { Alert } from 'react-native';
+import { getUserInfo } from './user';
 
 //get the api token
 export const getAPIToken = async () => {
@@ -78,25 +80,26 @@ export const handleLogin = async (username: string, password: string) => {
       password
     });
 
-    // invalid credentials
-    if (response.status == 401) {
-      //print out error
-    }
-    else if (response.status == 200) {
+    if (response.status == 200) {
       //handle the response from API
       let apiToken = await response.data;
       let { token } = await apiToken;
 
       //for debugging
       console.log(apiToken);
+      Alert.alert('Login successfully');
 
       //save the api token 
       await Keychain.setGenericPassword('apitoken', token, {
         service: SECURE_KEY,
       });
     }
-  } catch (error) {
-    console.error(error);
+  } catch (error: any) {
+    if (error.response.status === 401) {
+      Alert.alert('Invalid credentials', 'Please check your username and password and try again.');
+    } else {
+      // Handle other errors
+    }
   }
 };
 
@@ -110,12 +113,11 @@ export const handleLogout = async () => {
       headers: { Authorization: `Bearer ${apiToken}` }
     };
     await axios.post(apiUrl, '', config);
-    isLoggedIn().then(data => console.log(data));
     //clear api token from the keychain front end
     await Keychain.resetGenericPassword({
       service: SECURE_KEY,
     });
   } catch (error) {
-    console.error(error);
+    
   }
 }

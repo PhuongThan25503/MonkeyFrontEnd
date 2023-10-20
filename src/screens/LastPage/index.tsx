@@ -10,33 +10,19 @@ import { MAINCOLOR } from "../../config";
 import { scaleAnim } from "../../utils/animation";
 import LastPageButton from "./LastPageButton";
 import SoundPlayer from "react-native-sound-player";
+import { useSaveData } from "../../utils/globalState";
+import { removeStoryFromLocalStorage } from "../../utils/DeleteStoryData";
 
-export default function LastPage({ setCurrentPageNum }: any) {
+export default function LastPage({ navigation, storyId, setCurrentPageNum }: any) {
   const [coin, setCoin] = useState(0);
   const scaleValue = useRef(new Animated.Value(1)).current;
+  const isSavedData = useSaveData((state: any) => state.saveData);
 
   scaleAnim(scaleValue, 1.2, 100);
 
-  // const _onLoadingSubscription = SoundPlayer.addEventListener('FinishedLoadingURL', (data) => {
-  //   _onLoadingSubscription.remove();
-  //   try {
-
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // });
-
-  // const _onFinishSubscription = SoundPlayer.addEventListener('FinishedPlaying', (data) => {
-  //   try {
-  //     SoundPlayer.playSoundFile('coinfalling', 'mp3');
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // }); 
-
   useEffect(() => {
     SoundPlayer.playSoundFile('mario_sound', 'mp3');
-  },[])
+  }, [])
 
   useEffect(() => {
     if (coin < 25) {
@@ -56,7 +42,12 @@ export default function LastPage({ setCurrentPageNum }: any) {
         </Animated.View>
         <Text style={LastPageStyle.text}>+{coin}</Text>
       </View>
-      <LastPageButton onPress={setCurrentPageNum} icon={<Entypo color={MAINCOLOR} name="home" size={35}></Entypo>} />
+      <LastPageButton onPress={() => {
+        navigation.navigate('StoryList');
+        if (!isSavedData) {
+          removeStoryFromLocalStorage(storyId);
+        }
+      }} icon={<Entypo color={MAINCOLOR} name="home" size={35}></Entypo>} />
     </View>
   )
 }

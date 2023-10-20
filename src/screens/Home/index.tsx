@@ -16,28 +16,27 @@ import UserButton from "../../components/buttons/UserButton";
 import LoginButton from "../../components/buttons/LoginButton";
 import FunctionalButton from "../../components/buttons/FunctionalButton";
 import { FunctionalButtonStyle } from "../../components/buttons/styles/FunctionalButtonStyle";
+import { useUserInfor } from "../../utils/globalState";
 
 
 
 function Home({ navigation }: StackNavProps) {
-  const [user, setUser] = useState<User>(defaultUser);
-  const [checkLoggedIn, setCheckLoggedIn] = useState(false);
-
-  const [apikey, setApiKey] = useState('');
-
-  getAPIToken().then(data => setApiKey(data));
+  const user = useUserInfor((state:any) => state.user);
 
   //use the useFocusEffect hook to call the refresh function on focus
-  useFocusEffect(
-    React.useCallback(() => {
-      isLoggedIn().then(result => {
-        setCheckLoggedIn(result);
-        if (result) {
-          getUserInfo().then(data => { setUser(data) });
-        }
-      });
-    }, [])
-  );
+  // useFocusEffect(
+  //   React.useCallback(() => {
+  //     isLoggedIn().then(result => {
+  //       setCheckLoggedIn(result);
+  //       if (result) {
+  //         getUserInfo().then(data => { setUser(data) });
+  //       }
+  //     });
+  //   }, [])
+  // );
+  useEffect(()=>{
+    console.log(user);
+  },[user])
 
   return (
     <SafeAreaView style={HomeStyle.screen}>
@@ -48,7 +47,7 @@ function Home({ navigation }: StackNavProps) {
         <View style={HomeStyle.headerLeft}>
         </View>
         <View style={HomeStyle.authenticate}>{
-          checkLoggedIn ?
+          user ?
             <UserButton navigation={navigation} onPressProp={() => { }} userData={user} style={HomeStyle.loginButton}></UserButton>
             :
             <LoginButton onPress={() => navigation.navigate('Login')} style={HomeStyle.loginButton}></LoginButton>
@@ -62,7 +61,7 @@ function Home({ navigation }: StackNavProps) {
         <FunctionalButton styleProp={HomeStyle.functionalButton} title={"Story"} Icon={<Entypo name='open-book' style={FunctionalButtonStyle.icon}></Entypo>} onPressProp={() => navigation.navigate('StoryList')}></FunctionalButton>
         <FunctionalButton styleProp={HomeStyle.functionalButton} title={"Audio"} Icon={<MaterialIcons name='audiotrack' style={FunctionalButtonStyle.icon}></MaterialIcons>} onPressProp={() => navigation.navigate('Audio')}></FunctionalButton>
         <FunctionalButton styleProp={HomeStyle.functionalButton} title={"StarWine"} Icon={<FontAwesome5 name='wine-glass' style={FunctionalButtonStyle.icon}></FontAwesome5>} onPressProp={() => navigation.navigate('StarWine')}></FunctionalButton>
-        <FunctionalButton styleProp={HomeStyle.functionalButton} title={"Setting"} Icon={<AntDesign name='setting' style={FunctionalButtonStyle.icon}></AntDesign>} onPressProp={() => navigation.navigate('Test')}></FunctionalButton>
+        <FunctionalButton styleProp={HomeStyle.functionalButton} title={"Setting"} Icon={<AntDesign name='setting' style={FunctionalButtonStyle.icon}></AntDesign>} onPressProp={() => navigation.navigate('Setting')}></FunctionalButton>
       </View>
     </SafeAreaView>
   );

@@ -44,7 +44,7 @@ function StoryItem({ story, navigation }: Props) {
 
   const removingHandler = () =>{
     setVisible(false);
-    removeStoryFromLocalStorage(story);
+    removeStoryFromLocalStorage(story.story_id);
   }
   return (
     visible && <View style={StyleSheet.compose(StoryItemStyle.overOuterBound, { width: width * 0.2, height: height * 0.5 })}>

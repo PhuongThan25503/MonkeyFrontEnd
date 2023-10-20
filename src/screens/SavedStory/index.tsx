@@ -65,7 +65,7 @@ export default function SavedStory({ navigation }: any) {
         keyExtractor={(item) => item.story_id.toString()}
       />
       <Animated.View style={StyleSheet.compose(SavedStoryStyle.TopDecor, { transform: [{ translateY: cloudMove }] })}>
-        <StoryHeader color={MAINCOLOR} navigation={navigation} title={'S stories'} headerRatio={0.25}></StoryHeader>
+        <StoryHeader color={MAINCOLOR} navigation={navigation} title={'Saved stories'} headerRatio={0.25}></StoryHeader>
       </Animated.View>
     </SafeAreaView>
   )

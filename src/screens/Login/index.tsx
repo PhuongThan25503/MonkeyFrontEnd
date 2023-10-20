@@ -8,6 +8,8 @@ import GoogleSignInButton from "../../components/buttons/GoogleSignInButton";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../types";
 import { handleLogin } from "../../utils/authenticate";
+import { getUserInfo } from "../../utils/user";
+import { useUserInfor } from "../../utils/globalState";
 
 type Props = {
   navigation:NativeStackNavigationProp<RootStackParamList>;
@@ -16,10 +18,13 @@ type Props = {
 function Login( {navigation} : Props) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const setUser = useUserInfor((state:any) => state.setUser);
 
   const handleSubmit = async () => {
     //authenticate and save the token
     await handleLogin(username, password);
+          //saving user info:
+    await getUserInfo().then(data => { setUser(data) })
     //redirect to home 
     navigation.navigate('Home');
   }
@@ -43,7 +48,7 @@ function Login( {navigation} : Props) {
               Password
             </Text>
 
-            <TextInput onChangeText={(text) => setPassword(text)} style={loginStyles.input}>
+            <TextInput secureTextEntry={true} onChangeText={(text) => setPassword(text)} style={loginStyles.input}>
             </TextInput>
           </View>
 

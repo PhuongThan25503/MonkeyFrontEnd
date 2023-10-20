@@ -17,12 +17,12 @@ type Props = {
   pageTouches: any,
 }
 
-export default function TouchablesLayer({ mainText, pageTouches, gestureHandler, deviceHeight}: Props) {
+export default function TouchablesLayer({ mainText, pageTouches, gestureHandler, deviceHeight }: Props) {
   //floating text that appear when use press on screen's item
   const [popUpText, setPopUpText] = useState<touchableMediaData>({
     audio: '',
     text: '',
-    config: { x: 0, y: 0, rotate: 0 , width:0}
+    config: { x: 0, y: 0, rotate: 0, width: 0 }
   });
 
   const pointInPolygon = require('point-in-polygon');
@@ -37,6 +37,10 @@ export default function TouchablesLayer({ mainText, pageTouches, gestureHandler,
     .onStart((e) => {
       setTarget([e.absoluteX / SCALE, e.absoluteY / SCALE]);
     })
+
+  useEffect(() => { //reset pop up text when move page
+    setPopUpText({ audio: '', text: '', config: { x: 0, y: 0, rotate: 0, width: 0 } });
+  }, [mainText])
 
   useEffect(() => {
     pageTouches?.map((v: any, i: number) => {

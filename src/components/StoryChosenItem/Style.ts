@@ -27,7 +27,8 @@ export const ItemType = StyleSheet.create({
     alignItems: 'center',
     borderWidth: 2,
     borderColor: MAINCOLOR,
-    borderRadius: 20
+    borderRadius: 20,
+    marginTop: 100
   },
   ViewImage:{
     flex:3,

@@ -11,6 +11,7 @@ import { getIconStory } from "../../../data/dataPreparation/iconStory";
 import { getStaticStory } from "../../../data/dataPreparation/staticStory";
 import { BasicStoryInfo } from "../../../types";
 import { NOTICHANNEL } from "../../../config";
+import { Linking } from "react-native";
 
 type Props = {
   story: BasicStoryInfo
@@ -43,7 +44,7 @@ export default function DownLoadButton({ story }: Props) {
           message: "Tap here to play",
           playSound: true,
           soundName: 'default',
-          
+          userInfo: { link: "https://monkeyapp.page.link/uy1b/" + story.story_id },
         });
       })
     }

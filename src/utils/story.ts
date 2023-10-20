@@ -2,20 +2,22 @@ import RNFS from 'react-native-fs';
 
 import { ASYNC_KEY_PREFIX, IP } from "../config";
 import axios from "axios";
-import { BasicStoryInfo, PageInterface, StoryInterface, touchableMediaData } from "../types";
+import { PageInterface } from "../types";
 import { getAsyncData, isKeyExist, pushAsyncStorage, saveAsyncData } from "./asyncStorage";
+import { Alert } from 'react-native';
 
 type touchableData = {
   path: string,
   data: number[]
 }
-export const getAllStory = async () => {
+export const getAllStory = async (navigation: any) => {
   try {
     let apiUrl = IP + '/api/getAllStory';
-    let response = await axios.get(apiUrl);
+    let response = await axios.get(apiUrl, { timeout: 3000 });
     return response.data;
   } catch (error) {
-    console.log(error);
+    navigation.navigate('SavedStory');
+    Alert.alert('Bad internet connecttion', 'you are now on offline mode');
   }
 }
 
@@ -34,8 +36,7 @@ export const getPagesByStoryId = async (id: number) => {
     let apiUrl = IP + '/api/getPagesByStoryId/' + id;
     let response = await axios.get(apiUrl);
     const isExist = await isKeyExist(ASYNC_KEY_PREFIX + id);
-    //if(!isExist) await saveMediaToAsyncStorage(response.data.page, id);
-    await saveMediaToAsyncStorage(response.data.page, 32);
+    if(!isExist) await saveMediaToAsyncStorage(response.data.page, id);
     return response.data;
   } catch (error) {
     console.log(error);
@@ -60,9 +61,6 @@ export const saveMediaToAsyncStorage = async (pages: any, id: number) => {
     }));
 
     mainAudios.sort((a, b) => a.position - b.position);
-
-    //dowload touchable audio
-
 
     //set touchable
     story.push({

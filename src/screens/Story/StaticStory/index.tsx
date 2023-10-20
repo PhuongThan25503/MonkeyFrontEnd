@@ -91,7 +91,7 @@ function StaticStory({ route, navigation }: any) {
   return (
     (storyData && <SafeAreaView style={{ width: deviceOrientations.width, height: deviceOrientations.height }}>
       <StatusBar hidden={true}></StatusBar>
-      <Image resizeMode={'contain'} style={wordStyle.image} source={{ uri: storyData[currentPageNum]?.image }} />
+      { storyData[currentPageNum]?.image && <Image resizeMode={'contain'} style={wordStyle.image} source={{ uri: storyData[currentPageNum]?.image }} />}
       <SyncTextLayer
         mainText={storyData[currentPageNum]?.text}
         setGlobalCurrentMainText={setGlobalCurrentMainText}
@@ -123,7 +123,7 @@ function StaticStory({ route, navigation }: any) {
 
       {(!isLoaded || isLoading) ? <LoadingScene isLoading={isLoading} ></LoadingScene> : <></>}
       {
-        (currentPageNum >= storyData.length && storyData.length > 0) ? <LastPage setCurrentPageNum={setCurrentPage}></LastPage> : <BackButton navigation={navigation} color={MAINCOLOR}></BackButton>
+        (currentPageNum >= storyData.length && storyData.length > 0) ? <LastPage navigation={navigation} storyId={route.params.id} setCurrentPageNum={setCurrentPage}></LastPage> : <BackButton navigation={navigation} color={MAINCOLOR}></BackButton>
       }
     </SafeAreaView>)
   );

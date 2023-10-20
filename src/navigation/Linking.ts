@@ -3,7 +3,8 @@ export const linking = {
   config: {
     screens: {
       StoryList: 'H3Ed',
-      Story: 'eiuewu'
+      SavedStory: '3N7P',
+      StoryDetail: 'uy1b/:id'
     },
   },
 };

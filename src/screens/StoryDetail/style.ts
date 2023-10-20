@@ -4,6 +4,12 @@ import { MAINCOLOR } from "../../config";
 const { width, height } = Dimensions.get('window');
 
 export const StoryDetailStyle = StyleSheet.create({
+  topDecor:{
+    height: '25%',
+    width: '100%',
+    position: 'absolute',
+    top: 0
+  },
   screen : {
     flex:1,
     backgroundColor: 'white'

@@ -3,8 +3,7 @@ import { BasicStoryInfo } from "../types";
 import { deleteFolderById } from "./story";
 import { TYPE } from "../config";
 
-export const removeStoryFromLocalStorage = (story: BasicStoryInfo) => {
-  let id = story.story_id;
+export const removeStoryFromLocalStorage = (id: number) => {
   //delete in async storage
   AsyncStorage.removeItem('Story' + id);
   removeItemWithStoryId(id);

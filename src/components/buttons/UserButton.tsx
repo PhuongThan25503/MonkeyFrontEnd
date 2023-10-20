@@ -12,6 +12,7 @@ import { RootStackParamList, User } from '../../types';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { handleLogout } from '../../utils/authenticate';
 import HeaderButton from './HeaderButton';
+import { useUserInfor } from '../../utils/globalState';
 
 type Props = {
 	style: ViewStyle,
@@ -27,7 +28,8 @@ const UserButton = ({ style, userData, onPressProp, navigation }: Props): JSX.El
 	const scaleAnim = useRef(new Animated.Value(1)).current;
 	const rotateAnim = useRef(new Animated.Value(0)).current;
 	const opacityAnim = useRef(new Animated.Value(0)).current;
-	
+	const setUser = useUserInfor((state: any) => state.setUser);
+
 	const handlePress = () => {
 		onPressProp();
 		if (buttonToggle) {
@@ -64,7 +66,7 @@ const UserButton = ({ style, userData, onPressProp, navigation }: Props): JSX.El
 				<View style={UserButtonStyle.expandButtonGroup}>
 					<HeaderButton title='Personal Info ' Icon={<AntDesign name='user' size={ICON_SIZE} style={UserButtonStyle.icon}></AntDesign>} onPressProp={() => navigation.navigate('UserPersonalInfo')} ></HeaderButton>
 					<HeaderButton title='Dash board ' Icon={<Feather name='trending-up' size={ICON_SIZE} style={UserButtonStyle.icon}></Feather>} onPressProp={() => {}} ></HeaderButton>
-					<HeaderButton title='Logout ' Icon={<MaterialIcons name='logout' size={ICON_SIZE} style={UserButtonStyle.icon}></MaterialIcons>} onPressProp={() => { handleLogout(); navigation.navigate('Login') }} ></HeaderButton>
+					<HeaderButton title='Logout ' Icon={<MaterialIcons name='logout' size={ICON_SIZE} style={UserButtonStyle.icon}></MaterialIcons>} onPressProp={() => { handleLogout(); navigation.navigate('Login'); setUser(false) }} ></HeaderButton>
 				</View>
 			</Animated.View>
 		</React.Fragment>

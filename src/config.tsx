@@ -1,3 +1,5 @@
+import { Dimensions } from "react-native";
+
 // config for ngrok free IP or Ip of local computer
 export const IP = 'http://192.168.0.253:8000';
 
@@ -23,4 +25,9 @@ export const TYPE = 'Story';
 
 //id channel for notification
 export const NOTICHANNEL = '250503MonkeyApp';
+
+//
+export const WIDTH = 888.2353107272;
+
+export const HEIGHT = 423.1372628144145;
 

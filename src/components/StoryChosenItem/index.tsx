@@ -43,6 +43,7 @@ export default function StoryChosenItem({ story, navigation }: Props) {
         <View style={ItemType.buttonBound}>
           <TouchableOpacity onPress={() => handlePress()} style={StyleSheet.compose(ItemType.TouchableBound, ItemType.ChosenItem)}>
             <View style={ItemType.textBox}>
+              <Text>  </Text>
               <Octicons name="play" size={35} color={'white'}></Octicons>
               <Text style={ItemType.text}>PLAY</Text>
             </View>

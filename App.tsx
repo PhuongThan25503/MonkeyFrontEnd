@@ -35,7 +35,16 @@ function App() {
     },
     (created) => console.log(`createChannel returned ${created}`)
   );
-
+  PushNotification.configure({
+    onNotification: function (notification) {
+      console.log('NOTIFICATION:', notification);
+      // process the notification
+      // pass data through the notification
+      const data = notification.data;
+      console.log('DATA:', data.link);
+      Linking.openURL(data.link);
+    },
+  });
   useEffect(() => {
     // Call the token refresh function
     messaging().getToken().then(data => console.log("FCM key: " + data));

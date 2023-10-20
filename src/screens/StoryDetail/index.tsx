@@ -34,9 +34,6 @@ function StoryDetail({ navigation, route }: Props) {
     <SafeAreaView style={StoryDetailStyle.BoundBox}>
       <StatusBar hidden={true}></StatusBar>
       <View style={StoryDetailStyle.SubBoundBox}>
-        <View style={StoryDetailStyle.text}>
-          <StoryHeader color="#90ebfe" navigation={navigation} title={story.name} headerRatio={0.25}></StoryHeader>
-        </View>
         <StoryChosenItem story={story} navigation={navigation}></StoryChosenItem>
         <View style={StoryDetailStyle.IndicatorContainer}>
           <Canvas style={StoryDetailStyle.CanvasContainer}>
@@ -45,6 +42,9 @@ function StoryDetail({ navigation, route }: Props) {
           <TouchableOpacity onPress={() => { navigation.navigate('Story') }}>
             <Entypo name="home" color={'white'} size={35}></Entypo>
           </TouchableOpacity>
+        </View>
+        <View style={StoryDetailStyle.topDecor}>
+          <StoryHeader color="#90ebfe" navigation={navigation} title={story.name} headerRatio={0.25}></StoryHeader>
         </View>
       </View>
     </SafeAreaView>

@@ -12,15 +12,15 @@ export default function StoryList({ navigation }: any) {
   const [story, setStory] = useState<StoryInterface[]>();
   const cloudMove = useRef(new Animated.Value(0)).current;
   useEffect(() => {
-    getAllStory().then(data => setStory(data));
+    getAllStory(navigation).then(data => setStory(data));
   }, [])
 
-  function handleScroll(event:any) {
+  function handleScroll(event: any) {
     const { contentOffset } = event.nativeEvent;
-    if(contentOffset.y==0){
+    if (contentOffset.y == 0) {
       onTopAction()
     }
-    if(contentOffset.y > 0 ){
+    if (contentOffset.y > 0) {
       onScrollDownAction()
     }
   }
@@ -33,7 +33,7 @@ export default function StoryList({ navigation }: any) {
     anim(cloudMove, -50, 200);
   }
 
-  const itemData = (item:any) => {
+  const itemData = (item: any) => {
     return (
       <StoryItem
         onPressProp={() => navigation.navigate('StoryDetail', { id: item.story_id })}
@@ -47,26 +47,13 @@ export default function StoryList({ navigation }: any) {
   return (
     <SafeAreaView style={StoryListStyle.ViewWrap}>
       <StatusBar hidden={true}></StatusBar>
-      {/* <ScrollView onScroll={(event) => { if (event.nativeEvent.contentOffset.y === 0) { onTopAction() } else { onScrollDownAction() } }} style={StoryListStyle.ScrollViewBound}>
-        <View style={StoryListStyle.subScrollView}>
-          <View style={StoryListStyle.ViewBound}>
-            {
-              story?.map(s =>
-                <StoryItem onPressProp={() => navigation.navigate('StoryDetail', { id: s.story_id })}
-                  key={s.story_id}
-                  name={s.name}
-                  thumbnail={s.thumbnail} author={""} />)
-            }
-          </View>
-        </View>
-      </ScrollView> */}
       <FlatList
         contentContainerStyle={{ paddingTop: '10%', paddingLeft: '2%' }}
         style={StoryListStyle.flatList}
         numColumns={4}
         data={story}
         onScroll={handleScroll}
-        renderItem={({ item }) => ( 
+        renderItem={({ item }) => (
           itemData(item)
         )}
         keyExtractor={(item) => item.story_id.toString()}

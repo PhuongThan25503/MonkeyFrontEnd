@@ -79,6 +79,7 @@ function IconStory({ route, navigation }: any) {
     opacityValue.setValue(1);
     anim(opacityValue, 0, 1000);
   }, [currentPageNum])
+
   const setGlobalCurrentMainText = (a: number) => {
     setCurrentMainText(a);
   }
@@ -122,7 +123,7 @@ function IconStory({ route, navigation }: any) {
 
       {(!isLoaded || isLoading) ? <LoadingScene isLoading={isLoading} ></LoadingScene> : <></>}
       {
-        (currentPageNum >= storyData.length && storyData.length > 0) ? <LastPage setCurrentPageNum={setCurrentPage}></LastPage> : <BackButton navigation={navigation} color={MAINCOLOR}></BackButton>
+        (currentPageNum >= storyData.length && storyData.length > 0) ? <LastPage navigation={navigation} storyId={route.params.id} setCurrentPageNum={setCurrentPage}></LastPage> : <BackButton navigation={navigation} color={MAINCOLOR}></BackButton>
       }
     </SafeAreaView>)
   );
