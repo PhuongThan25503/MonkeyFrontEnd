@@ -23,7 +23,8 @@ type TypeDownloadFunction = {
 
 const typeDownLoadFunction: TypeDownloadFunction = {
   1: getStaticStory,
-  2: getIconStory
+  2: getIconStory,
+  3: getIconStory,
 }
 
 export default function DownLoadButton({ story }: Props) {
